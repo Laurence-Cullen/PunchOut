@@ -28,7 +28,7 @@
         <button id="button">Capture</button>
     </div>
     <div class="row">
-        <p id="capture data"></p>
+        <p id="posture"></p>
     </div>
 </div>
 
@@ -39,26 +39,42 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.14.1/dist/tf.min.js"></script>
 
 <script>
-    let canvas, context, video;
+    let model;
 
-    const width = 224;
-    const height = 224;
-
-    const constraints = {video: {width: {exact: width}, height: {exact: height}}};
-    video = document.querySelector('video');
-    navigator.mediaDevices.getUserMedia(constraints).
-    then((stream) => {video.srcObject = stream});
-
-    canvas = document.getElementById("canvas");
-    context = canvas.getContext("2d");
-
-    let captureButton = document.getElementById("button");
-    captureButton.onclick = function () {
-        context.drawImage(video, 0, 0, width, height);
-        const imageData = context.getImageData(0, 0, width, height);
-
-        tf.fromPixels(imageData).print();
+    async function loadModel() {
+        model = await tf.loadModel('models/model.json');
+        return model
     }
+
+    loadModel().then(function (model) {
+        let canvas, context, video;
+
+        const width = 224;
+        const height = 224;
+
+        const constraints = {video: {width: {exact: width}, height: {exact: height}}};
+        video = document.querySelector('video');
+        navigator.mediaDevices.getUserMedia(constraints).
+        then((stream) => {video.srcObject = stream});
+
+        canvas = document.getElementById("canvas");
+        context = canvas.getContext("2d");
+
+        let captureButton = document.getElementById("button");
+        let postureDisplay = document.getElementById("posture");
+
+        function inferPosture(imageData) {
+            const tensor = tf.fromPixels(imageData).reshape([1, 224, 224, 3]);
+            postureDisplay.innerText = model.predict(tensor);
+        }
+
+        captureButton.onclick = function () {
+            context.drawImage(video, 0, 0, width, height);
+            const imageData = context.getImageData(0, 0, width, height);
+            const posture = inferPosture(imageData)
+
+        }
+    });
 
 
 
