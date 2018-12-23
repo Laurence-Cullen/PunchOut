@@ -1,4 +1,4 @@
 # PunchOut
 An experiment in using deep learning machine vision to power a JS game in a web browser.
 
-Check out the demo: punchout-34c05.firebaseapp.com/
+Check out the [demo](https://punchout-34c05.firebaseapp.com/)
