@@ -12,27 +12,30 @@
     <title>Punch Out</title>
 </head>
 <body>
+<!-- Hidden canvas for drawing web cam frames to prior to inference -->
+<canvas id="canvas" width="224" height="224" hidden></canvas>
+
 
 <div class="container" id="punch_out">
     <div class="row">
         <h1>Welcome to Punch Out!</h1>
     </div>
     <div class="row">
-        <div class="col">
-            <video autoplay controls id="video"></video>
+        <canvas id="game_canvas" width="700" height="200" hidden></canvas>
+    </div>
+    <div class="row">
+        <div class="col-7">
+            <video autoplay id="video" width="500" height="500"></video>
         </div>
-        <div class="col">
-            <canvas id="canvas" width="224" height="224"></canvas>
+        <div class="col-3">
+            <div class="row"><h1>Posture:</h1>
+                <h1 id="posture"></h1>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <button id="button">Capture</button>
-    </div>
-    <div class="row">
-        <p id="posture"></p>
-    </div>
-    <div class="row">
-        <canvas id="game_canvas"></canvas>
+        <div class="col-2">
+            <div class="row"><h1>Punch count</h1></div>
+            <div class="row"><h1 id="punch_count"></h1></div>
+        </div>
     </div>
 </div>
 
@@ -49,9 +52,27 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.14.1/dist/tf.min.js"></script>
 
 <script>
-    let model;
+    // defining dimensions of video to capture from web cam
+    const width = 224;
+    const height = 224;
 
-    var punchSound = new Audio('assets/PUNCH.mp3');
+    // how often to run posture inference from web cam in milliseconds
+    const modelEvaluationPeriod = 50;
+
+    const punchSound = new Audio('assets/PUNCH.mp3');
+    let punchCount = 0;
+
+    let gameCanvas = document.getElementById('game_canvas');
+    let gameContext = gameCanvas.getContext("2d");
+
+    const playerRect = [75, 75, 125, 125];
+    const enemyStartLocation = [475, 75, 525, 125];
+
+    let punchCountElement = document.getElementById('punch_count');
+
+    let posture = null;
+
+    let model;
 
     async function loadModel() {
         model = await tf.loadModel('models/model.json');
@@ -60,11 +81,30 @@
 
     const modelLabels = {0: 'no punch', 1: 'right punch'};
 
+
+    function newPunch() {
+        punchSound.play();
+
+        punchCount++;
+        punchCountElement.innerText = punchCount
+
+    }
+
+    function drawPlayer() {
+        gameContext.fillStyle = "#FF0000";
+        gameContext.fillRect(...playerRect)
+    }
+
+    function drawEnemy() {
+        gameContext.fillStyle = "#0000FF";
+        gameContext.fillRect(...enemyStartLocation)
+    }
+
+    drawPlayer();
+    drawEnemy();
+
     loadModel().then(function (model) {
         let canvas, context, video;
-
-        const width = 224;
-        const height = 224;
 
         const constraints = {video: {width: {exact: width}, height: {exact: height}}};
         video = document.querySelector('video');
@@ -91,38 +131,18 @@
             const imageData = context.getImageData(0, 0, width, height);
 
             console.time('inferPosture');
-            const posture = inferPosture(imageData);
+            const newPosture = inferPosture(imageData);
             console.timeEnd('inferPosture');
 
+            if ((newPosture === posture) && (newPosture === 'right punch')) {
+
+            } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
+                newPunch()
+            }
+            posture = newPosture;
             postureDisplay.innerText = posture;
 
-
-            if (posture === 'right punch') {
-                punchSound.play();
-            }
-
-        }, 80);
-
-        captureButton.onclick = function () {
-            context.drawImage(video, 0, 0, width, height);
-            const imageData = context.getImageData(0, 0, width, height);
-
-            console.time('inferPosture');
-            const posture = inferPosture(imageData);
-            console.timeEnd('inferPosture');
-
-            postureDisplay.innerText = posture;
-
-
-            if (posture === 'right punch') {
-                punchSound.play();
-            }
-        };
-
-        // let button = document.getElementById('btn-download');
-        // button.addEventListener('click', function (e) {
-        //     button.href = canvas.toDataURL('image/png');
-        // });
+        }, modelEvaluationPeriod);
     });
 
 
