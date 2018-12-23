@@ -46,6 +46,8 @@
         return model
     }
 
+    const modelLabels = {0: 'no punch', 1: 'right punch'};
+
     loadModel().then(function (model) {
         let canvas, context, video;
 
@@ -65,14 +67,25 @@
 
         function inferPosture(imageData) {
             const tensor = tf.fromPixels(imageData).reshape([1, 224, 224, 3]);
-            postureDisplay.innerText = model.predict(tensor);
+            const predictions = model.predict(tensor);
+            const labelValue = predictions.argMax(1).asScalar().get();
+            return modelLabels[labelValue]
         }
+
+        setInterval(function() {
+            context.drawImage(video, 0, 0, width, height);
+            const imageData = context.getImageData(0, 0, width, height);
+
+            console.time('inferPosture');
+            postureDisplay.innerText = inferPosture(imageData);
+            console.timeEnd('inferPosture')
+
+        }, 5000);
 
         captureButton.onclick = function () {
             context.drawImage(video, 0, 0, width, height);
             const imageData = context.getImageData(0, 0, width, height);
-            const posture = inferPosture(imageData)
-
+            postureDisplay.innerText = inferPosture(imageData)
         }
     });
 
