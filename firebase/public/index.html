@@ -21,20 +21,29 @@
         <h1>Welcome to Punch Out!</h1>
     </div>
     <div class="row">
-        <canvas id="game_canvas" width="700" height="200" hidden></canvas>
-    </div>
-    <div class="row">
         <div class="col-7">
-            <video autoplay id="video" width="500" height="500"></video>
+            <video autoplay id="video" width="400" height="400"></video>
         </div>
         <div class="col-3">
-            <div class="row"><h1>Posture:</h1>
-                <h1 id="posture"></h1>
+            <div class="row">
+                <button type="button" class="btn btn-danger btn-lg" id="game_start">Start game</button>
+            </div>
+            <div class="row">
+                <h2>Punch when the target goes red:</h2>
+                <canvas id="game_canvas" width="200" height="200"></canvas>
             </div>
         </div>
         <div class="col-2">
-            <div class="row"><h1>Punch count</h1></div>
-            <div class="row"><h1 id="punch_count"></h1></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            <button type="button" class="btn btn-primary btn-lg" id="reset">Reset</button>
+        </div>
+        <div class="col-8">
+            <div class="row"><h2>Posture:</h2><h2 id="posture">no punch</h2></div>
+            <div class="row"><h2>Player score:</h2> <h2 id="player_score">0</h2></div>
+            <div class="row"><h2>Targets destroyed:</h2><h2 id="targets_destroyed">0</h2></div>
         </div>
     </div>
 </div>
@@ -59,21 +68,48 @@
     // how often to run posture inference from web cam in milliseconds
     const modelEvaluationPeriod = 50;
 
+    // initialise posture
+    let posture = null;
+
+    // how long a single game session is in seconds
+    const gameLength = 60;
+
+    // the probability per game engine tick that a target will appear
+    const showTargetProbability = 0.05;
+
+    let gameStatus = false;
+
+
     const punchSound = new Audio('assets/PUNCH.mp3');
+    const countdownSound = new Audio('assets/mario_kart_race_start.mp3');
+    const fightSound = new Audio('assets/mortal_kombat_fight.mp3');
+
+    let playerScore = 0;
     let punchCount = 0;
+    let targetsDestroyed = 0;
+
+    // tracks how many game engine ticks a target has survived
+    let targetAge = 0;
 
     let gameCanvas = document.getElementById('game_canvas');
     let gameContext = gameCanvas.getContext("2d");
 
-    const playerRect = [75, 75, 125, 125];
-    const enemyStartLocation = [475, 75, 525, 125];
+    const targetRect = [50, 50, 150, 150];
+    const targetOutline = [47, 47, 153, 153];
 
-    let punchCountElement = document.getElementById('punch_count');
+    let targetStatus = false;
 
-    let posture = null;
+    let playerScoreElement = document.getElementById('player_score');
+    let targetsDestroyedElement = document.getElementById('targets_destroyed');
+    let postureElement = document.getElementById("posture");
+    let resetButton = document.getElementById('reset');
+    let gameStartButton = document.getElementById('game_start');
+
+    gameStartButton.onclick = async function() {
+        countdownSound.play();
+    };
 
     let model;
-
     async function loadModel() {
         model = await tf.loadModel('models/model.json');
         return model
@@ -82,26 +118,56 @@
     const modelLabels = {0: 'no punch', 1: 'right punch'};
 
 
+    function draw() {
+        drawStateToHTML();
+        drawTarget()
+    }
+
+    function drawStateToHTML() {
+        playerScoreElement.innerText = playerScore;
+        targetsDestroyedElement.innerText = targetsDestroyed;
+        postureElement.innerText = posture;
+    }
+
     function newPunch() {
         punchSound.play();
-
         punchCount++;
-        punchCountElement.innerText = punchCount
+
+        if (targetStatus) {
+            playerScore += Math.max(0, 40 - targetAge);
+            targetsDestroyed++;
+            targetAge = 0;
+            targetStatus = false;
+        } else {
+            playerScore -= 10
+        }
 
     }
 
-    function drawPlayer() {
-        gameContext.fillStyle = "#FF0000";
-        gameContext.fillRect(...playerRect)
+    resetButton.onclick = function () {
+        playerScore = 0;
+        punchCount = 0;
+        targetStatus = false;
+        targetAge = 0;
+        targetsDestroyed = 0;
+    };
+
+    function drawTarget() {
+
+        if (targetStatus) {
+            gameContext.fillStyle = "#FF0000";
+            gameContext.fillRect(...targetRect)
+        } else {
+            gameContext.fillStyle = "#FFFFFF";
+            gameContext.fillRect(...targetRect);
+
+            gameContext.rect(...targetOutline);
+            gameContext.lineWidth = "6";
+            gameContext.stroke()
+        }
     }
 
-    function drawEnemy() {
-        gameContext.fillStyle = "#0000FF";
-        gameContext.fillRect(...enemyStartLocation)
-    }
-
-    drawPlayer();
-    drawEnemy();
+    draw();
 
     loadModel().then(function (model) {
         let canvas, context, video;
@@ -114,9 +180,6 @@
 
         canvas = document.getElementById("canvas");
         context = canvas.getContext("2d");
-
-        let captureButton = document.getElementById("button");
-        let postureDisplay = document.getElementById("posture");
 
         function inferPosture(imageData) {
             const tensor = tf.fromPixels(imageData).reshape([1, 224, 224, 3]);
@@ -139,10 +202,25 @@
             } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
                 newPunch()
             }
+
             posture = newPosture;
-            postureDisplay.innerText = posture;
+
+            if (targetStatus) {
+                targetAge++;
+            }
 
         }, modelEvaluationPeriod);
+
+        setInterval(function () {
+            draw();
+        }, 20);
+
+        setInterval(function () {
+            if (Math.random() < showTargetProbability) {
+                targetStatus = true;
+            }
+        }, 100)
+
     });
 
 
