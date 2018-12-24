@@ -21,7 +21,10 @@
         <h1>Welcome to Punch Out!</h1>
     </div>
     <div class="row">
-        <div class="col-7">
+        <div class="col-3">
+            <canvas id="game_canvas_left" width="200" height="200"></canvas>
+        </div>
+        <div class="col-6">
             <video autoplay id="video" width="400" height="400"></video>
         </div>
         <div class="col-3">
@@ -30,7 +33,7 @@
             </div>
             <div class="row">
                 <h2>Punch when the target goes red:</h2>
-                <canvas id="game_canvas" width="200" height="200"></canvas>
+                <canvas id="game_canvas_right" width="200" height="200"></canvas>
             </div>
         </div>
         <div class="col-2">
@@ -41,9 +44,12 @@
             <button type="button" class="btn btn-primary btn-lg" id="reset">Reset</button>
         </div>
         <div class="col-8">
-            <div class="row"><h2>Posture:</h2><h2 id="posture">no punch</h2></div>
-            <div class="row"><h2>Player score:</h2> <h2 id="player_score">0</h2></div>
-            <div class="row"><h2>Targets destroyed:</h2><h2 id="targets_destroyed">0</h2></div>
+            <div class="row"><h2>Posture:</h2>
+                <h2 id="posture">no punch</h2></div>
+            <div class="row"><h2>Player score:</h2>
+                <h2 id="player_score">0</h2></div>
+            <div class="row"><h2>Targets destroyed:</h2>
+                <h2 id="targets_destroyed">0</h2></div>
         </div>
     </div>
 </div>
@@ -77,27 +83,35 @@
     // the probability per game engine tick that a target will appear
     const showTargetProbability = 0.05;
 
+    // defines whether a game is active or not
     let gameStatus = false;
-
 
     const punchSound = new Audio('assets/PUNCH.mp3');
     const countdownSound = new Audio('assets/mario_kart_race_start.mp3');
     const fightSound = new Audio('assets/mortal_kombat_fight.mp3');
+
+    const leftPunchSound = new Audio('assets/left_punch.m4a');
+    const rightPunchSound = new Audio('assets/right_punch.m4a');
 
     let playerScore = 0;
     let punchCount = 0;
     let targetsDestroyed = 0;
 
     // tracks how many game engine ticks a target has survived
-    let targetAge = 0;
+    let rightTargetAge = 0;
+    let leftTargetAge = 0;
 
-    let gameCanvas = document.getElementById('game_canvas');
-    let gameContext = gameCanvas.getContext("2d");
+    let gameCanvasLeft = document.getElementById('game_canvas_left');
+    let gameContextLeft = gameCanvasLeft.getContext("2d");
+
+    let gameCanvasRight = document.getElementById('game_canvas_right');
+    let gameContextRight = gameCanvasRight.getContext("2d");
 
     const targetRect = [50, 50, 150, 150];
     const targetOutline = [47, 47, 153, 153];
 
-    let targetStatus = false;
+    let rightTargetStatus = false;
+    let leftTargetStatus = false;
 
     let playerScoreElement = document.getElementById('player_score');
     let targetsDestroyedElement = document.getElementById('targets_destroyed');
@@ -105,22 +119,24 @@
     let resetButton = document.getElementById('reset');
     let gameStartButton = document.getElementById('game_start');
 
-    gameStartButton.onclick = async function() {
-        countdownSound.play();
+    gameStartButton.onclick = async function () {
+        playFromStart(countdownSound);
     };
 
     let model;
+
     async function loadModel() {
         model = await tf.loadModel('models/model.json');
         return model
     }
 
-    const modelLabels = {0: 'left punch', 2: 'right punch', 1: 'no punch'};
+    const modelLabels = {0: 'left punch', 1: 'no punch', 2: 'right punch',};
 
 
     function draw() {
         drawStateToHTML();
-        drawTarget()
+        drawTarget(rightTargetStatus, gameContextRight);
+        drawTarget(leftTargetStatus, gameContextLeft);
     }
 
     function drawStateToHTML() {
@@ -129,41 +145,64 @@
         postureElement.innerText = posture;
     }
 
-    function newPunch() {
-        punchSound.play();
-        punchCount++;
-
-        if (targetStatus) {
-            playerScore += Math.max(0, 40 - targetAge);
-            targetsDestroyed++;
-            targetAge = 0;
-            targetStatus = false;
+    function playFromStart(audio) {
+        if (audio.paused) {
+            audio.play();
         } else {
-            playerScore -= 10
+            audio.currentTime = 0;
+        }
+    }
+
+    function newPunch(newPosture) {
+        playFromStart(punchSound);
+        
+        if (newPosture === 'left punch') {
+            playFromStart(leftPunchSound);
+
+            if (leftTargetStatus) {
+                playerScore += Math.max(0, 40 - leftTargetAge);
+                targetsDestroyed++;
+                leftTargetAge = 0;
+                leftTargetStatus = false;
+            } else {
+                playerScore -= 10
+            }
+
+        } else if (newPosture === 'right punch') {
+            playFromStart(rightPunchSound);
+
+            if (rightTargetStatus) {
+                playerScore += Math.max(0, 40 - rightTargetAge);
+                targetsDestroyed++;
+                rightTargetAge = 0;
+                rightTargetStatus = false;
+            } else {
+                playerScore -= 10
+            }
         }
 
+        punchCount++;
     }
 
     resetButton.onclick = function () {
         playerScore = 0;
         punchCount = 0;
-        targetStatus = false;
-        targetAge = 0;
+        rightTargetStatus = false;
+        rightTargetAge = 0;
         targetsDestroyed = 0;
     };
 
-    function drawTarget() {
-
+    function drawTarget(targetStatus, context) {
         if (targetStatus) {
-            gameContext.fillStyle = "#FF0000";
-            gameContext.fillRect(...targetRect)
+            context.fillStyle = "#FF0000";
+            context.fillRect(...targetRect)
         } else {
-            gameContext.fillStyle = "#FFFFFF";
-            gameContext.fillRect(...targetRect);
+            context.fillStyle = "#FFFFFF";
+            context.fillRect(...targetRect);
 
-            gameContext.rect(...targetOutline);
-            gameContext.lineWidth = "6";
-            gameContext.stroke()
+            context.rect(...targetOutline);
+            context.lineWidth = "6";
+            context.stroke()
         }
     }
 
@@ -200,30 +239,38 @@
             if ((newPosture === posture) && (newPosture === 'right punch')) {
 
             } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
-                newPunch()
+                newPunch(newPosture)
+            } else if ((newPosture !== posture) && (newPosture === 'left punch')) {
+                newPunch(newPosture)
             }
 
             posture = newPosture;
 
-            if (targetStatus) {
-                targetAge++;
+            if (rightTargetStatus) {
+                rightTargetAge++;
             }
 
+            if (leftTargetStatus) {
+                leftTargetAge++
+            }
+            draw()
         }, modelEvaluationPeriod);
 
-        setInterval(function () {
-            draw();
-        }, 20);
+        // setInterval(function () {
+        //     draw();
+        // }, 20);
 
         setInterval(function () {
             if (Math.random() < showTargetProbability) {
-                targetStatus = true;
+                rightTargetStatus = true;
+            }
+
+            if (Math.random() < showTargetProbability) {
+                leftTargetStatus = true;
             }
         }, 100)
 
     });
-
-
 </script>
 
 </body>
