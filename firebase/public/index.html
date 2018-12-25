@@ -89,7 +89,6 @@
     const punchSound = new Audio('assets/PUNCH.mp3');
     const countdownSound = new Audio('assets/mario_kart_race_start.mp3');
     const fightSound = new Audio('assets/mortal_kombat_fight.mp3');
-
     const leftPunchSound = new Audio('assets/left_punch.m4a');
     const rightPunchSound = new Audio('assets/right_punch.m4a');
 
@@ -131,7 +130,6 @@
     }
 
     const modelLabels = {0: 'left punch', 1: 'no punch', 2: 'right punch',};
-
 
     function draw() {
         drawStateToHTML();
@@ -180,15 +178,18 @@
                 playerScore -= 10
             }
         }
-
         punchCount++;
     }
 
     resetButton.onclick = function () {
         playerScore = 0;
         punchCount = 0;
+
         rightTargetStatus = false;
         rightTargetAge = 0;
+        leftTargetStatus = false;
+        leftTargetAge = 0;
+
         targetsDestroyed = 0;
     };
 
@@ -256,10 +257,6 @@
             draw()
         }, modelEvaluationPeriod);
 
-        // setInterval(function () {
-        //     draw();
-        // }, 20);
-
         setInterval(function () {
             if (Math.random() < showTargetProbability) {
                 rightTargetStatus = true;
@@ -269,7 +266,6 @@
                 leftTargetStatus = true;
             }
         }, 100)
-
     });
 </script>
 
