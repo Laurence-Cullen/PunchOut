@@ -28,3 +28,17 @@ thinking a punching action was taking place).
 MobileNet with pretained ImageNet weights retrained with the final 20 layers unlocked produced 100% on our (admittedly) small testing sample
 of only people other than Laurence or me...! Going forward we will have a bigger and more diverese testing set to try and make our model
 increasingly robust over a large variety of people.
+
+Iteration 3:
+
+We were feeling lazy so flipped the right_punch training dataset with a short python script, creating a left_punch training dataset from 
+those. Similarly we flipped the right_punch testing images and make a left_punch testing dataset from that. Our transfer learning 20
+layers onwards unlocked for retraining MobNet model learnt the expanded testing set from the expanding training set with 100% accuracy
+over now 3 states: left punch, right punch and no punch.
+
+!!!! We noticed at this point that though we got 100% testing accuracy with our model, in practice on the webcam the game was MUCH better
+at interpreting right punches than left punches, and we wondered if this could have been some sort of bias introdroduced by not also
+horizontally flipping the no_punch images- perhaps we were biased towards one side in the images when taking these original no punch images
+as we were also only punching to the right at that point. So we horizontally flipped all the no_punch images and added these to the
+training and testing datasets and retrained our model
+
