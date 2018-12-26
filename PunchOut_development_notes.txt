@@ -1,0 +1,30 @@
+Iteration 1:
+
+630 or so training images, slit into 500 training 130 validation images, all of ONLY laurence or me.
+
+Augmented data learning on a 7 Convo layer deep CNN achieved 100% on the validation set of images also of ONLY me and laurence, and 82% 
+on images of ONLY laurence's mum, dad and sister (who were not used in training the model at all).
+
+!!!!! Mobile net with transfer learning layers unlocked after layer 20 till the end produced 98.65% accuracy on the same testing set as 
+above!!!! Calculation time is about 80ms per prediction
+
+Unlocking only layers 30 and after drops testing accuracy to about 82-85%. Similarly unlocking all layers after layer 10 for retraining
+also drops testing accuracy to 82% ish. Unlocking 
+
+Iteration 2:
+
+Iteration 1 had only images of Laurence and me (Greg) in the training and validation data. It also had a strong propensity to classify 
+hands held around head height in a guard stance or around the centre of the body crossed or not as a right punch which comprised the
+majority of its misclassification. Dataset iteration 2 is up to 989 images, of which the new images are a combination of me, Laurence, 
+Mark and Maddy holding a variety of "guard" positions with our hands held up around our heads or mid-body labelled as "no-punch" to 
+attempt to train the model out of misclassifying this category of poses. As such this is the first iteration that includes (a 
+proportionately small) ammount of images of people other than Laurence or I in the training and validation sets.
+
+Running a 7 layer deep conv2D network (the same that produced the peak 82% test accuracy in iteration 1) produced an accuracy of 88%,
+a substantial improvement for relatively little effort and a little deliberate error rectification (we posed infront of a livefeed of our
+model parsing data out of a webcam to deduce that the model really did not like hands held raised around the midbody in terms of falsely
+thinking a punching action was taking place).
+
+MobileNet with pretained ImageNet weights retrained with the final 20 layers unlocked produced 100% on our (admittedly) small testing sample
+of only people other than Laurence or me...! Going forward we will have a bigger and more diverese testing set to try and make our model
+increasingly robust over a large variety of people.
