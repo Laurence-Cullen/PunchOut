@@ -2,7 +2,9 @@ images_backup
 images_fixed
 
 .DS_STORE
-
+.ipynb_checkpoints/
+local_models/
+saved_models/
 .idea*
 
 # Logs
