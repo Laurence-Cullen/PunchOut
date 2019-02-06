@@ -23,17 +23,15 @@
     <div class="row">
         <div class="col-3">
             <canvas id="game_canvas_left" width="200" height="200"></canvas>
+            <h3 id="punch_prompt_left"></h3>
         </div>
         <div class="col-6">
             <video autoplay id="video" width="400" height="400"></video>
         </div>
         <div class="col-3">
             <div class="row">
-                <button type="button" class="btn btn-danger btn-lg" id="game_start">Start game</button>
-            </div>
-            <div class="row">
-                <h2>Punch when the target goes red:</h2>
                 <canvas id="game_canvas_right" width="200" height="200"></canvas>
+                <h3 id="punch_prompt_right"></h3>
             </div>
         </div>
         <div class="col-2">
@@ -102,9 +100,11 @@
 
     let gameCanvasLeft = document.getElementById('game_canvas_left');
     let gameContextLeft = gameCanvasLeft.getContext("2d");
+    let punchPromptLeft = document.getElementById('punch_prompt_left');
 
     let gameCanvasRight = document.getElementById('game_canvas_right');
     let gameContextRight = gameCanvasRight.getContext("2d");
+    let punchPromptRight = document.getElementById('punch_prompt_right');
 
     const targetRect = [50, 50, 150, 150];
     const targetOutline = [47, 47, 153, 153];
@@ -116,11 +116,11 @@
     let targetsDestroyedElement = document.getElementById('targets_destroyed');
     let postureElement = document.getElementById("posture");
     let resetButton = document.getElementById('reset');
-    let gameStartButton = document.getElementById('game_start');
-
-    gameStartButton.onclick = async function () {
-        playFromStart(countdownSound);
-    };
+    // let gameStartButton = document.getElementById('game_start');
+    //
+    // gameStartButton.onclick = async function () {
+    //     playFromStart(countdownSound);
+    // };
 
     let model;
 
@@ -133,8 +133,8 @@
 
     function draw() {
         drawStateToHTML();
-        drawTarget(rightTargetStatus, gameContextRight);
-        drawTarget(leftTargetStatus, gameContextLeft);
+        drawTarget(rightTargetStatus, gameContextRight, punchPromptRight);
+        drawTarget(leftTargetStatus, gameContextLeft, punchPromptLeft);
     }
 
     function drawStateToHTML() {
@@ -193,17 +193,21 @@
         targetsDestroyed = 0;
     };
 
-    function drawTarget(targetStatus, context) {
+    function drawTarget(targetStatus, context, targetPrompt) {
         if (targetStatus) {
             context.fillStyle = "#FF0000";
-            context.fillRect(...targetRect)
+            context.fillRect(...targetRect);
+            targetPrompt.innerText = 'Punch!';
+
         } else {
             context.fillStyle = "#FFFFFF";
             context.fillRect(...targetRect);
 
             context.rect(...targetOutline);
             context.lineWidth = "6";
-            context.stroke()
+            context.stroke();
+
+            targetPrompt.innerText = '';
         }
     }
 
@@ -223,7 +227,7 @@
 
         function inferPosture(imageData) {
             const tensor = tf.fromPixels(imageData).reshape([1, 224, 224, 3]);
-            const normalisedTensor = tensor.div(tf.tensor1d([255]));
+            const normalisedTensor = tensor.div(tf.tensor([255.0]));
             const predictions = model.predict(normalisedTensor);
             const labelValue = predictions.argMax(1).asScalar().get();
             return modelLabels[labelValue]
