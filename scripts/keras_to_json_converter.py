@@ -13,12 +13,13 @@ x = base_model.output
 x = GlobalAveragePooling2D()(x)
 x = Dense(1024, activation='relu')(x)
 predictions = Dense(4, activation='softmax')(x)
+
 # this is the model we will train
 mobilenetV2_model = Model(inputs=base_model.input, outputs=predictions)
 mobilenetV2_model.summary()
 mobilenetV2_model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(lr=0.0003), metrics=['accuracy'])
 
-mobilenetV2_model.load_weights('../local_models/duck-iteration_98percenttest.hdf5')
+mobilenetV2_model.load_weights('../saved_models/weights.best.MobileNetV2.hdf5')
 
 
 tfjs.converters.save_keras_model(mobilenetV2_model, '../models/javascript_models/temp')
