@@ -18,7 +18,7 @@ mobilenetV2_model = Model(inputs=base_model.input, outputs=predictions)
 mobilenetV2_model.summary()
 mobilenetV2_model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(lr=0.0003), metrics=['accuracy'])
 
-mobilenetV2_model.load_weights('usable_models/duck-iteration_98percenttest.hdf5')
+mobilenetV2_model.load_weights('../local_models/duck-iteration_98percenttest.hdf5')
 
-s
-tfjs.converters.save_keras_model(mobilenetV2_model, 'Javascript_models/temp')
+
+tfjs.converters.save_keras_model(mobilenetV2_model, '../models/javascript_models/temp')
