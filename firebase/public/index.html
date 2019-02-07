@@ -40,16 +40,43 @@
     <div class="row">
         <div class="col-2">
             <button type="button" class="btn btn-primary btn-lg" id="reset">Reset</button>
+            <button type="button" class="btn btn-danger btn-lg" id="game_start">Start</button>
         </div>
         <div class="col-8">
-            <div class="row"><h2>Posture:</h2>
-                <h2 id="posture">no punch</h2></div>
-            <div class="row"><h2>Player score:</h2>
-                <h2 id="player_score">0</h2></div>
-            <div class="row"><h2>Targets destroyed:</h2>
-                <h2 id="targets_destroyed">0</h2></div>
+            <div class="row">
+                <h2>Posture:</h2>
+                <h2 id="posture">no punch</h2>
+            </div>
+            <div class="row">
+                <h2>Player score:</h2>
+                <h2 id="player_score">0</h2>
+            </div>
+            <div class="row">
+                <h2>Targets destroyed:</h2>
+                <h2 id="targets_destroyed">0</h2>
+            </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="finalScoreModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="modal-body">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 </div>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -75,14 +102,17 @@
     // initialise posture
     let posture = null;
 
-    // how long a single game session is in seconds
-    const gameLength = 60;
+    // how long a single game session is in terms of destroyed targets
+    const gameLength = 10;
 
     // the probability per game engine tick that a target will appear
     const showTargetProbability = 0.05;
 
+    
+    const gunshotProbability = 0.01;
+
     // defines whether a game is active or not
-    let gameStatus = false;
+    let gameActive = false;
 
     const punchSound = new Audio('assets/PUNCH.mp3');
     const countdownSound = new Audio('assets/mario_kart_race_start.mp3');
@@ -91,7 +121,7 @@
     const rightPunchSound = new Audio('assets/right_punch.m4a');
     const welcomeSound = new Audio('assets/welcome.m4a');
     const shatterSound = new Audio('assets/shatter.mp3');
-
+    const gunshotSound = new Audio('assets/gunshot.mps');
 
     let playerScore = 0;
     let punchCount = 0;
@@ -101,6 +131,7 @@
     let rightTargetAge = 0;
     let leftTargetAge = 0;
 
+
     let gameCanvasLeft = document.getElementById('game_canvas_left');
     let gameContextLeft = gameCanvasLeft.getContext("2d");
     let punchPromptLeft = document.getElementById('punch_prompt_left');
@@ -108,6 +139,8 @@
     let gameCanvasRight = document.getElementById('game_canvas_right');
     let gameContextRight = gameCanvasRight.getContext("2d");
     let punchPromptRight = document.getElementById('punch_prompt_right');
+
+    let modalBody = document.getElementById('modal-body');
 
     const targetRect = [50, 50, 150, 150];
     const targetOutline = [47, 47, 153, 153];
@@ -119,11 +152,12 @@
     let targetsDestroyedElement = document.getElementById('targets_destroyed');
     let postureElement = document.getElementById("posture");
     let resetButton = document.getElementById('reset');
-    // let gameStartButton = document.getElementById('game_start');
-    //
-    // gameStartButton.onclick = async function () {
-    //     playFromStart(countdownSound);
-    // };
+    let gameStartButton = document.getElementById('game_start');
+
+    gameStartButton.onclick = function () {
+        playFromStart(countdownSound);
+        gameActive = true
+    };
 
     let model;
 
@@ -132,7 +166,7 @@
         return model
     }
 
-    const modelLabels = {0: 'left punch', 1: 'no punch', 2: 'right punch',};
+    const modelLabels = {0: 'duck', 1: 'left punch', 2: 'no punch', 3: 'right punch',};
 
     function draw() {
         drawStateToHTML();
@@ -166,7 +200,7 @@
                 targetsDestroyed++;
                 leftTargetAge = 0;
                 leftTargetStatus = false;
-            } else {
+            } else if (gameActive) {
                 playerScore -= 10
             }
 
@@ -179,14 +213,16 @@
                 targetsDestroyed++;
                 rightTargetAge = 0;
                 rightTargetStatus = false;
-            } else {
+            } else if (gameActive) {
                 playerScore -= 10
             }
         }
         punchCount++;
     }
 
-    resetButton.onclick = function () {
+    function reset() {
+        gameActive = false;
+
         playerScore = 0;
         punchCount = 0;
 
@@ -196,7 +232,9 @@
         leftTargetAge = 0;
 
         targetsDestroyed = 0;
-    };
+    }
+
+    resetButton.onclick = reset;
 
     function drawTarget(targetStatus, context, targetPrompt) {
         if (targetStatus) {
@@ -217,6 +255,16 @@
     }
 
     draw();
+
+    function gameEndCheck(){
+        if(targetsDestroyed >= gameLength){
+            modalBody.innerText = 'Your final score was: ' + playerScore.toString();
+            $('#finalScoreModal').modal('show');
+
+            reset()
+        }
+    }
+
 
     loadModel().then(function (model) {
 
@@ -267,17 +315,23 @@
             if (leftTargetStatus) {
                 leftTargetAge++
             }
-            draw()
+            draw();
+
+            gameEndCheck();
+
         }, modelEvaluationPeriod);
 
         setInterval(function () {
-            if (Math.random() < showTargetProbability) {
-                rightTargetStatus = true;
+            if(gameActive){
+                if (Math.random() < showTargetProbability) {
+                    rightTargetStatus = true;
+                }
+
+                if (Math.random() < showTargetProbability) {
+                    leftTargetStatus = true;
+                }
             }
 
-            if (Math.random() < showTargetProbability) {
-                leftTargetStatus = true;
-            }
         }, 100)
     });
 </script>
