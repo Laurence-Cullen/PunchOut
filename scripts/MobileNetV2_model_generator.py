@@ -10,11 +10,12 @@ from keras.layers import Dense
 from keras.layers import GlobalAveragePooling2D
 from keras.models import Model
 from keras.preprocessing import image
+from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import np_utils
 from sklearn.datasets import load_files
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
-from keras.preprocessing.image import ImageDataGenerator
+
 
 # define function to load train, test, and validation datasets
 def load_dataset(path):
@@ -67,11 +68,10 @@ train_tensors, valid_tensors, train_targets, valid_targets = train_test_split(tr
 # Augmented data model generator
 
 def augmented_MobileNetV2_model():
-    ###### Fine tuning MobileNetV2
+    # Fine tuning MobileNetV2
     patience = 10
     batch_size = 20
     epochs = 50
-
 
     # create the base pre-trained model
     base_model = MobileNetV2(weights='imagenet', include_top=False)
@@ -95,7 +95,6 @@ def augmented_MobileNetV2_model():
 
     mobilenetV2_model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(lr=0.0003),
                               metrics=['accuracy'])
-
 
     checkpointer = ModelCheckpoint(filepath='../saved_models/weights.best.MobileNetV2.hdf5',
                                    verbose=1, save_best_only=True)
@@ -122,7 +121,6 @@ def augmented_MobileNetV2_model():
         validation_data=(valid_tensors, valid_targets),
         class_weight=None,  # Can pay more attention to underrepresented classes
     )
-
 
     # load the weights that generated the best validation accuracy
     mobilenetV2_model.load_weights('../saved_models/weights.best.MobileNetV2.hdf5')
@@ -152,4 +150,3 @@ def augmented_MobileNetV2_model():
 
 
 augmented_MobileNetV2_model()
-
