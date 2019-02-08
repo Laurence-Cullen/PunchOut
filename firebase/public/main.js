@@ -175,7 +175,7 @@ function duckEventInitializer() {
     let date = new Date();
     let start_time = date.getTime();
     playFromStart(gunshotSound);
-    playFromStart(duckCommands[Math.floor(Math.random() * bulletMisses.length)]);
+    playFromStart(duckCommands[Math.floor(Math.random() * duckCommands.length)]);
     return start_time + duckTime + 20
 }
 
@@ -186,7 +186,7 @@ function duckCheck(posture) {
             playFromStart(bulletMisses[Math.floor(Math.random() * bulletMisses.length)]);
             duckStatus = false;
         } else {
-            playFromStart(onHit);
+            playFromStart(onHit[Math.floor(Math.random() * onHit.length)]);
             lives--;
             livesTracker.innerHTML = lives;
             duckStatus = false;
