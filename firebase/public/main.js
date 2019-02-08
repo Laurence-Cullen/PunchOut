@@ -14,9 +14,6 @@ const gameLength = 10;
 // the probability per game engine tick that a target will appear
 const showTargetProbability = 0.05;
 
-// the probability of having to duck per game engine tick
-let duckStatusProbability = 0.01;
-
 // end_time of duck event, to be initialized with duckEventInitializer
 let end_time = 0;
 
@@ -63,7 +60,8 @@ let duckCommands = [
 let playerScore = 0;
 let punchCount = 0;
 let targetsDestroyed = 0;
-let duckTime = 3;
+let duckStatusProbability = 0.02;
+let duckTime = 2;
 let lives = 3;
 
 // tracks how many game engine ticks a target has survived
@@ -110,11 +108,11 @@ async function loadModel() {
 const modelLabels = {0: 'duck', 1: 'left punch', 2: 'no punch', 3: 'right punch',};
 
 function timeToDuck() {
-    return 3000 - Math.min(2500, 50 * targetsDestroyed)
+    return 2000 - Math.min(1500, 50 * targetsDestroyed)
 }
 
 function duckProbability() {
-    return Math.min(0.1, 0.01 + 0.0025 * targetsDestroyed)
+    return Math.min(0.1, 0.02 + 0.0025 * targetsDestroyed)
 }
 
 function draw() {
@@ -212,8 +210,8 @@ function reset() {
 
     targetsDestroyed = 0;
 
-    duckStatusProbability = 0.01;
-    duckTime = 3;
+    duckStatusProbability = 0.02;
+    duckTime = 2;
 }
 
 resetButton.onclick = reset;
