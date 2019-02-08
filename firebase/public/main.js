@@ -28,7 +28,7 @@ const rightPunchSound = new Audio('assets/right_punch.m4a');
 const welcomeSound = new Audio('assets/welcome.m4a');
 const shatterSound = new Audio('assets/shatter.mp3');
 const gunshotSound = new Audio('assets/gunshot.mp3');
-const gameOver = new Audio('assets/game_over_1.wav');
+const gameOver = new Audio('assets/game_over_2.wav');
 
 let onHit = [
     new Audio('assets/male_grunt_2.mp3'),
@@ -50,10 +50,18 @@ let bulletMisses = [
 ];
 
 let duckCommands = [
-    new Audio('assets/duck_1'),
-    new Audio('assets/duck_1'),
-    new Audio('assets/duck_1'),
-    new Audio('assets/duck_1')
+    new Audio('assets/duck_1.wav'),
+    new Audio('assets/duck_2.wav'),
+    new Audio('assets/duck_3.wav'),
+    new Audio('assets/duck_4.wav'),
+    new Audio('assets/duck_5.wav'),
+    new Audio('assets/duck_6.wav'),
+    new Audio('assets/duck_7.wav'),
+    new Audio('assets/duck_8.wav'),
+    new Audio('assets/duck_9.wav'),
+    new Audio('assets/duck_10.wav'),
+    new Audio('assets/duck_11.wav'),
+    new Audio('assets/duck_12.wav')
 ];
 
 
@@ -175,7 +183,7 @@ function duckEventInitializer() {
     let date = new Date();
     let start_time = date.getTime();
     playFromStart(gunshotSound);
-    playFromStart(duckCommands[Math.floor(Math.random() * bulletMisses.length)]);
+    playFromStart(duckCommands[Math.floor(Math.random() * duckCommands.length)]);
     return start_time + duckTime + 20
 }
 
@@ -186,7 +194,7 @@ function duckCheck(posture) {
             playFromStart(bulletMisses[Math.floor(Math.random() * bulletMisses.length)]);
             duckStatus = false;
         } else {
-            playFromStart(onHit);
+            playFromStart(onHit[Math.floor(Math.random() * onHit.length)]);
             lives--;
             livesTracker.innerHTML = lives;
             duckStatus = false;
