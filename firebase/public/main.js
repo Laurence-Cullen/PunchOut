@@ -31,10 +31,13 @@ const gunshotSound = new Audio('assets/gunshot.mp3');
 const gameOver = new Audio('assets/game_over_2.wav');
 
 let onHit = [
-    new Audio('assets/male_grunt_2.mp3'),
-    new Audio('assets/male_grunt_2.mp3'),
-    new Audio('assets/male_grunt_2.mp3'),
-    new Audio('assets/male_grunt_2.mp3')
+    new Audio('assets/on_hit/1.mp3'),
+    new Audio('assets/on_hit/2.mp3'),
+    new Audio('assets/on_hit/3.mp3'),
+    new Audio('assets/on_hit/4.mp3'),
+    new Audio('assets/on_hit/5.mp3'),
+    new Audio('assets/on_hit/6.mp3'),
+    new Audio('assets/on_hit/7.mp3')
 ];
 
 let bulletMisses = [
