@@ -134,6 +134,15 @@
     const welcomeSound = new Audio('assets/welcome.m4a');
     const shatterSound = new Audio('assets/shatter.mp3');
     const gunshotSound = new Audio('assets/gunshot.mp3');
+    let bulletMisses = [new Audio('assets/bullet_miss_1.wav'),
+        new Audio('assets/bullet_miss_2.wav'),
+        new Audio('assets/bullet_miss_3.wav'),
+        new Audio('assets/bullet_miss_4.wav'),
+        new Audio('assets/bullet_miss_5.wav'),
+        new Audio('assets/bullet_miss_6.wav'),
+        new Audio('assets/bullet_miss_7.wav'),
+        new Audio('assets/bullet_miss_8.wav'),
+        new Audio('assets/bullet_miss_9.wav')];
 
     let playerScore = 0;
     let punchCount = 0;
@@ -259,6 +268,9 @@
         let date = new Date();
         if (date.getTime() > end_time) {
             if (posture === 'duck') {
+                x = bulletMisses[Math.floor(Math.random() * bulletMisses.length)]
+                console.log("index:", x)
+                playFromStart(x);
                 duckStatus = false;
             } else {
                 lives--;
@@ -383,7 +395,6 @@
             if (gameActive) {
                 if (Math.random() < showTargetProbability) {
                     rightTargetStatus = true;
-                    console.log("inside right target")
                 }
                 if (Math.random() < showTargetProbability) {
                     leftTargetStatus = true;
@@ -392,7 +403,6 @@
                 console.log(duckStatusProbability)
 
                 if ((Math.random() < duckStatusProbability) && (duckStatus === false)) {
-                    console.log("inside duck");
                     duckStatus = true;
                     end_time = duckEventInitializer();
                 }
