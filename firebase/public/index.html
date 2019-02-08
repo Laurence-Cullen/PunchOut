@@ -114,6 +114,10 @@
 
     const gunshotProbability = 0.01;
 
+    // end_time of duck event, to be initialized with duckEventInitializer
+
+    let end_time = 0
+
     // defines whether a game is active or not
     let gameActive = false;
 
@@ -130,6 +134,7 @@
     let punchCount = 0;
     let targetsDestroyed = 0;
     let duckTime = 3;
+    let lives = 3;
 
     // tracks how many game engine ticks a target has survived
     let rightTargetAge = 0;
@@ -174,11 +179,11 @@
     const modelLabels = {0: 'duck', 1: 'left punch', 2: 'no punch', 3: 'right punch',};
 
     function timeToDuck() {
-        return 3 - Math.min(2.5, 0.025 * targetsDestroyed)
+        return 3000 - Math.min(2500, 25 * targetsDestroyed)
     }
 
     function duckProbability() {
-        return Math.min(0.1, 0.01 + 0.0025 * targetsDestroyed)
+        return Math.min(0.01, 0.01 + 0.0025 * targetsDestroyed)
     }
 
     function draw() {
@@ -237,11 +242,32 @@
         punchCount++;
     }
 
+    function duckEventInitializer() {
+        let date = new Date();
+        let start_time = date.getTime();
+        return start_time + duckTime + 20
+    }
+    function duckCheck(posture) {
+        let date = new Date();
+        if (date.getTime() === end_time) {
+            if (posture === 'duck') {
+                duckStatus = false;
+            }
+            else {
+                lives --
+                duckStatus = false;
+            }
+        }
+
+
+            }
+
     function reset() {
         gameActive = false;
 
         playerScore = 0;
         punchCount = 0;
+        lives = 3;
 
         rightTargetStatus = false;
         rightTargetAge = 0;
@@ -249,6 +275,9 @@
         leftTargetAge = 0;
 
         targetsDestroyed = 0;
+
+        duckStatusProbability = 0.01;
+        duckTime = 3;
     }
 
     resetButton.onclick = reset;
@@ -323,6 +352,11 @@
                 newPunch(newPosture)
             }
 
+            if (duckStatus) {
+                end_time = duckEventInitializer();
+                duckCheck(posture, end_time)
+            }
+
             posture = newPosture;
 
             if (rightTargetStatus) {
@@ -346,7 +380,7 @@
                 if (Math.random() < showTargetProbability) {
                     leftTargetStatus = true;
 
-                 if (( Math.Random() < duckStatusProbability) && (duckStatus = false)) {
+                 if (( Math.Random() < duckStatusProbability) && (duckStatus === false)) {
                      duckStatus = true;
                  }
                 }
