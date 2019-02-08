@@ -50,18 +50,18 @@ let bulletMisses = [
 ];
 
 let duckCommands = [
-    new Audio('assets/duck_1.wav'),
-    new Audio('assets/duck_2.wav'),
-    new Audio('assets/duck_3.wav'),
-    new Audio('assets/duck_4.wav'),
-    new Audio('assets/duck_5.wav'),
-    new Audio('assets/duck_6.wav'),
-    new Audio('assets/duck_7.wav'),
-    new Audio('assets/duck_8.wav'),
-    new Audio('assets/duck_9.wav'),
-    new Audio('assets/duck_10.wav'),
-    new Audio('assets/duck_11.wav'),
-    new Audio('assets/duck_12.wav')
+    new Audio('assets/duck/1.wav'),
+    new Audio('assets/duck/2.wav'),
+    new Audio('assets/duck/3.wav'),
+    new Audio('assets/duck/4.wav'),
+    new Audio('assets/duck/5.wav'),
+    new Audio('assets/duck/6.wav'),
+    new Audio('assets/duck/7.wav'),
+    new Audio('assets/duck/8.wav'),
+    new Audio('assets/duck/9.wav'),
+    new Audio('assets/duck/10.wav'),
+    new Audio('assets/duck/11.wav'),
+    new Audio('assets/duck/12.wav')
 ];
 
 
