@@ -55,26 +55,31 @@
                 <h2>Targets destroyed:</h2>
                 <h2 id="targets_destroyed">0</h2>
             </div>
+            <div class="row">
+                <h2>Lives:</h2>
+                <h2 id="lives">0</h2>
+            </div>
         </div>
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="finalScoreModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" id="modal-body">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
+    <div class="modal fade" id="finalScoreModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
 </div>
@@ -110,13 +115,13 @@
 
     // the probability of having to duck per game engine tick
 
-    let duckStatusProbability = 0.01
+    let duckStatusProbability = 0.01;
 
     const gunshotProbability = 0.01;
 
     // end_time of duck event, to be initialized with duckEventInitializer
 
-    let end_time = 0
+    let end_time = 0;
 
     // defines whether a game is active or not
     let gameActive = false;
@@ -128,7 +133,7 @@
     const rightPunchSound = new Audio('assets/right_punch.m4a');
     const welcomeSound = new Audio('assets/welcome.m4a');
     const shatterSound = new Audio('assets/shatter.mp3');
-    const gunshotSound = new Audio('assets/gunshot.mps');
+    const gunshotSound = new Audio('assets/gunshot.mp3');
 
     let playerScore = 0;
     let punchCount = 0;
@@ -163,7 +168,8 @@
     let postureElement = document.getElementById("posture");
     let resetButton = document.getElementById('reset');
     let gameStartButton = document.getElementById('game_start');
-
+    let livesTracker = document.getElementById("lives");
+    livesTracker.innerHTML = lives;
     gameStartButton.onclick = function () {
         playFromStart(countdownSound);
         gameActive = true
@@ -179,11 +185,11 @@
     const modelLabels = {0: 'duck', 1: 'left punch', 2: 'no punch', 3: 'right punch',};
 
     function timeToDuck() {
-        return 3000 - Math.min(2500, 25 * targetsDestroyed)
+        return 3000 - Math.min(2500, 50 * targetsDestroyed)
     }
 
     function duckProbability() {
-        return Math.min(0.01, 0.01 + 0.0025 * targetsDestroyed)
+        return Math.min(0.1, 0.01 + 0.0025 * targetsDestroyed)
     }
 
     function draw() {
@@ -208,7 +214,7 @@
 
     function newPunch(newPosture) {
         playFromStart(punchSound);
-        
+
         if (newPosture === 'left punch') {
             playFromStart(leftPunchSound);
 
@@ -245,22 +251,24 @@
     function duckEventInitializer() {
         let date = new Date();
         let start_time = date.getTime();
+        playFromStart(gunshotSound);
         return start_time + duckTime + 20
     }
+
     function duckCheck(posture) {
         let date = new Date();
-        if (date.getTime() === end_time) {
+        if (date.getTime() > end_time) {
             if (posture === 'duck') {
                 duckStatus = false;
-            }
-            else {
-                lives --
+            } else {
+                lives--;
+                livesTracker.innerHTML = lives;
                 duckStatus = false;
             }
         }
 
 
-            }
+    }
 
     function reset() {
         gameActive = false;
@@ -302,8 +310,8 @@
 
     draw();
 
-    function gameEndCheck(){
-        if(targetsDestroyed >= gameLength){
+    function gameEndCheck() {
+        if (lives === 0) {
             modalBody.innerText = 'Your final score was: ' + playerScore.toString();
             $('#finalScoreModal').modal('show');
 
@@ -340,9 +348,9 @@
             context.drawImage(video, 0, 0, width, height);
             const imageData = context.getImageData(0, 0, width, height);
 
-            console.time('inferPosture');
+            // console.time('inferPosture');
             const newPosture = inferPosture(imageData);
-            console.timeEnd('inferPosture');
+            // console.timeEnd('inferPosture');
 
             if ((newPosture === posture) && (newPosture === 'right punch')) {
 
@@ -353,8 +361,7 @@
             }
 
             if (duckStatus) {
-                end_time = duckEventInitializer();
-                duckCheck(posture, end_time)
+                duckCheck(posture, end_time);
             }
 
             posture = newPosture;
@@ -373,21 +380,27 @@
         }, modelEvaluationPeriod);
 
         setInterval(function () {
-            if(gameActive){
+            if (gameActive) {
                 if (Math.random() < showTargetProbability) {
                     rightTargetStatus = true;
+                    console.log("inside right target")
                 }
                 if (Math.random() < showTargetProbability) {
                     leftTargetStatus = true;
-
-                 if (( Math.Random() < duckStatusProbability) && (duckStatus === false)) {
-                     duckStatus = true;
-                 }
                 }
+
+                console.log(duckStatusProbability)
+
+                if ((Math.random() < duckStatusProbability) && (duckStatus === false)) {
+                    console.log("inside duck");
+                    duckStatus = true;
+                    end_time = duckEventInitializer();
+                }
+
             }
 
         }, 100)
-    });
+    })
 </script>
 
 </body>
