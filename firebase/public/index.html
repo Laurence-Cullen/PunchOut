@@ -134,6 +134,8 @@
     const welcomeSound = new Audio('assets/welcome.m4a');
     const shatterSound = new Audio('assets/shatter.mp3');
     const gunshotSound = new Audio('assets/gunshot.mp3');
+    const onHit = new Audio('assets/male_grunt_2.mp3');
+    const gameOver = new Audio('assets/game_over_1.wav');
     let bulletMisses = [new Audio('assets/bullet_miss_1.wav'),
         new Audio('assets/bullet_miss_2.wav'),
         new Audio('assets/bullet_miss_3.wav'),
@@ -268,11 +270,10 @@
         let date = new Date();
         if (date.getTime() > end_time) {
             if (posture === 'duck') {
-                x = bulletMisses[Math.floor(Math.random() * bulletMisses.length)]
-                console.log("index:", x)
-                playFromStart(x);
+                playFromStart(bulletMisses[Math.floor(Math.random() * bulletMisses.length)]);
                 duckStatus = false;
             } else {
+                playFromStart(onHit);
                 lives--;
                 livesTracker.innerHTML = lives;
                 duckStatus = false;
@@ -326,6 +327,7 @@
         if (lives === 0) {
             modalBody.innerText = 'Your final score was: ' + playerScore.toString();
             $('#finalScoreModal').modal('show');
+            playFromStart(gameOver);
 
             reset()
         }
