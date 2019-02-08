@@ -108,6 +108,9 @@
     // the probability per game engine tick that a target will appear
     const showTargetProbability = 0.05;
 
+    // the probability of having to duck per game engine tick
+
+    let duckStatusProbability = 0.01
 
     const gunshotProbability = 0.01;
 
@@ -126,6 +129,7 @@
     let playerScore = 0;
     let punchCount = 0;
     let targetsDestroyed = 0;
+    let duckTime = 3;
 
     // tracks how many game engine ticks a target has survived
     let rightTargetAge = 0;
@@ -147,6 +151,7 @@
 
     let rightTargetStatus = false;
     let leftTargetStatus = false;
+    let duckStatus = false;
 
     let playerScoreElement = document.getElementById('player_score');
     let targetsDestroyedElement = document.getElementById('targets_destroyed');
@@ -168,9 +173,12 @@
 
     const modelLabels = {0: 'duck', 1: 'left punch', 2: 'no punch', 3: 'right punch',};
 
-    function timeToDuck(targetsDestroyedElement) {
-        duckTime = 3 - Math.min(2.5, 0.025 * targetsDestroyedElement)
-        return duckTime
+    function timeToDuck() {
+        return 3 - Math.min(2.5, 0.025 * targetsDestroyed)
+    }
+
+    function duckProbability() {
+        return Math.min(0.1, 0.01 + 0.0025 * targetsDestroyed)
     }
 
     function draw() {
@@ -203,6 +211,8 @@
                 playFromStart(shatterSound);
                 playerScore += Math.max(0, 40 - leftTargetAge);
                 targetsDestroyed++;
+                duckTime = timeToDuck();
+                duckStatusProbability = duckProbability();
                 leftTargetAge = 0;
                 leftTargetStatus = false;
             } else if (gameActive) {
@@ -216,6 +226,8 @@
                 playFromStart(shatterSound);
                 playerScore += Math.max(0, 40 - rightTargetAge);
                 targetsDestroyed++;
+                duckTime = timeToDuck();
+                duckStatusProbability = duckProbability();
                 rightTargetAge = 0;
                 rightTargetStatus = false;
             } else if (gameActive) {
@@ -331,9 +343,12 @@
                 if (Math.random() < showTargetProbability) {
                     rightTargetStatus = true;
                 }
-
                 if (Math.random() < showTargetProbability) {
                     leftTargetStatus = true;
+
+                 if (( Math.Random() < duckStatusProbability) && (duckStatus = false)) {
+                     duckStatus = true;
+                 }
                 }
             }
 
