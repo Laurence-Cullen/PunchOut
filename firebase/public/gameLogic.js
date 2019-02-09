@@ -69,7 +69,7 @@ let postureElement = document.getElementById("posture");
 let resetButton = document.getElementById('reset');
 let gameStartButton = document.getElementById('game_start');
 let livesTracker = document.getElementById("lives");
-livesTracker.innerHTML = lives;
+livesTracker.innerHTML = '❤️'.repeat(lives);
 
 gameStartButton.onclick = function () {
     playFromStart(countdownSound);
@@ -168,7 +168,7 @@ function duckCheck(posture) {
         } else {
             playFromStart(onHit[Math.floor(Math.random() * onHit.length)]);
             lives--;
-            livesTracker.innerHTML = lives;
+            livesTracker.innerHTML = '❤️'.repeat(lives);
             duckStatus = false;
         }
     }
