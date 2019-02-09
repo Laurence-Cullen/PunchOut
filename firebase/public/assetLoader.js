@@ -40,6 +40,11 @@ export function getDuckCommandAssets() {
     ]
 }
 
-export function get() {
-    
+export function getJumpCommandAssets() {
+    return [
+        new Audio('assets/jump_commands/1.mp3'),
+        new Audio('assets/jump_commands/2.mp3'),
+        new Audio('assets/jump_commands/3.mp3'),
+        new Audio('assets/jump_commands/4.mp3'),
+    ]
 }

@@ -1,4 +1,4 @@
-import {getOnBulletHitAssets, getBulletMissAssets, getDuckCommandAssets} from './assetLoader.js'
+import {getOnBulletHitAssets, getBulletMissAssets, getDuckCommandAssets, getJumpCommandAssets} from './assetLoader.js'
 
 // defining dimensions of video to capture from web cam
 const width = 224;
@@ -14,7 +14,7 @@ let posture = null;
 const showTargetProbability = 0.05;
 const missedPunchPenalty = 30;
 
-// end_time of duck_commands event, to be initialized with duckEventInitializer
+// end_time of duck event, to be initialized with duckEventInitializer
 let end_time = 0;
 
 // defines whether a game is active or not
@@ -35,13 +35,14 @@ const explosionSounds = new Audio('assets/explosion_1.wav');
 let onBulletHit = getOnBulletHitAssets();
 let onBulletMiss = getBulletMissAssets();
 let duckCommands = getDuckCommandAssets();
+let jumpCommands = getJumpCommandAssets();
 
 let playerScore = 0;
 let punchCount = 0;
 let targetsDestroyed = 0;
 let duckProbability = 0.02;
 let duckTime = 2000;
-let jumpProbability = 0.01;
+let jumpProbability = 0.2;
 let jumpTime = 1500;
 let lives = 3;
 
@@ -90,7 +91,7 @@ async function loadModel() {
     return model
 }
 
-const modelLabels = {0: 'duck_commands', 1: 'jump', 2: 'left punch', 3: 'no punch', 4: 'right punch',};
+const modelLabels = {0: 'duck', 1: 'jump', 2: 'left punch', 3: 'no punch', 4: 'right punch',};
 
 function timeToDuck() {
     return 2000 - Math.min(900, 50 * targetsDestroyed)
@@ -163,7 +164,7 @@ function duckEventInitializer() {
     playFromStart(duckCommands[Math.floor(Math.random() * duckCommands.length)]);
     setTimeout(function duckCommandDelay() {
         gunshotSound.play();
-    }, 1000)
+    }, 1000);
     return start_time + duckTime + 20
 }
 
@@ -171,7 +172,7 @@ function duckEventInitializer() {
 function duckCheck(posture) {
     let date = new Date();
     if (date.getTime() > end_time) {
-        if (posture === 'duck_commands') {
+        if (posture === 'duck') {
             playFromStart(onBulletMiss[Math.floor(Math.random() * onBulletMiss.length)]);
             duckEvent = false;
             gameEvent = false;
@@ -187,19 +188,16 @@ function duckCheck(posture) {
 
 
 function jumpCheck(posture) {
-    playFromStart(jumpCommands[Math.floor(Math.random() * jumpCommands.length)]);
     setTimeout(function jumpDelay() {
         if (posture === 'jump') {
             playFromStart(explosionSounds);
             gameEvent = false;
-            jumpEvent = false;
         }
-        else: {
+        else {
             playFromStart(explosionSounds);
-            playFromStart(screamSound);
+            playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
             lives --;
             gameEvent = false;
-            jumpEvent = false;
         }
 
         gameActive = true;
@@ -257,7 +255,7 @@ function gameEndCheck() {
         $('#finalScoreModal').modal('show');
         setTimeout(function gameOverVoiceover() {
             playFromStart(gameOver)
-        }, 750)
+        }, 750);
 
 
         resetGame()
@@ -313,6 +311,7 @@ loadModel().then(function (model) {
 
             if (jumpEvent) {
                 jumpCheck();
+                jumpEvent = false;
             }
         }
         posture = newPosture;
@@ -346,9 +345,10 @@ loadModel().then(function (model) {
                 end_time = duckEventInitializer();
             }
 
-            if ((Math.random() < jumpProbability) && (gameEvent === true)) {
+            if ((Math.random() < jumpProbability) && (gameEvent === false)) {
                 jumpEvent = true;
                 gameEvent = true;
+                playFromStart(jumpCommands[Math.floor(Math.random() * jumpCommands.length)]);
             }
         }
     }, 100)
