@@ -261,18 +261,21 @@ loadModel().then(function (model) {
         const newPosture = inferPosture(imageData);
         // console.timeEnd('inferPosture');
 
-        if ((newPosture === posture) && (newPosture === 'right punch')) {
+        if (gameActive) {
 
-        } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
-            newPunch(newPosture)
-        } else if ((newPosture !== posture) && (newPosture === 'left punch')) {
-            newPunch(newPosture)
+            if ((newPosture === posture) && (newPosture === 'right punch')) {
+
+            } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
+                newPunch(newPosture)
+            } else if ((newPosture !== posture) && (newPosture === 'left punch')) {
+                newPunch(newPosture)
+            }
+
+
+            if (duckStatus) {
+                duckCheck(posture, end_time);
+            }
         }
-
-        if (duckStatus) {
-            duckCheck(posture, end_time);
-        }
-
         posture = newPosture;
 
         if (rightTargetStatus) {
