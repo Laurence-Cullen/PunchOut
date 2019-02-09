@@ -61,7 +61,9 @@ const targetOutline = [47, 47, 153, 153];
 
 let rightTargetStatus = false;
 let leftTargetStatus = false;
-let duckStatus = false;
+let gameEvent = false;
+let duckEvent = false;
+let jumpEvent = false;
 
 let playerScoreElement = document.getElementById('player_score');
 let targetsDestroyedElement = document.getElementById('targets_destroyed');
@@ -166,12 +168,12 @@ function duckCheck(posture) {
     if (date.getTime() > end_time) {
         if (posture === 'duck') {
             playFromStart(bulletMisses[Math.floor(Math.random() * bulletMisses.length)]);
-            duckStatus = false;
+            duckEvent = false;
         } else {
             playFromStart(onHit[Math.floor(Math.random() * onHit.length)]);
             lives--;
             livesTracker.innerHTML = '❤️'.repeat(lives);
-            duckStatus = false;
+            duckEvent = false;
         }
     }
 }
@@ -275,7 +277,7 @@ loadModel().then(function (model) {
             }
 
 
-            if (duckStatus) {
+            if (duckEvent) {
                 duckCheck(posture, end_time);
             }
         }
@@ -306,8 +308,8 @@ loadModel().then(function (model) {
 
             console.log(duckProbability);
 
-            if ((Math.random() < duckProbability) && (duckStatus === false)) {
-                duckStatus = true;
+            if ((Math.random() < duckProbability) && (duckEvent === false)) {
+                duckEvent = true;
                 end_time = duckEventInitializer();
             }
         }
