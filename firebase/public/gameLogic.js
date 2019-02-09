@@ -73,7 +73,9 @@ livesTracker.innerHTML = '❤️'.repeat(lives);
 
 gameStartButton.onclick = function () {
     playFromStart(countdownSound);
-    gameActive = true
+    setTimeout(function gameStart(){
+        gameActive = true;
+    }, 4500)
 };
 
 let model;
