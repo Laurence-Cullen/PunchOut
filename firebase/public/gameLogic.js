@@ -223,7 +223,10 @@ function gameEndCheck() {
     if (lives === 0) {
         modalBody.innerText = 'Your final score was: ' + playerScore.toString();
         $('#finalScoreModal').modal('show');
-        playFromStart(gameOver);
+        setTimeout(function gameOverVoiceover(){
+        playFromStart(gameOver)
+    }, 750)
+
 
         resetGame()
     }
