@@ -40,6 +40,7 @@ let punchCount = 0;
 let targetsDestroyed = 0;
 let duckProbability = 0.02;
 let duckTime = 2000;
+let jumpProbability = 0.01;
 let lives = 3;
 
 // tracks how many game engine ticks a target has survived
@@ -169,11 +170,13 @@ function duckCheck(posture) {
         if (posture === 'duck') {
             playFromStart(bulletMisses[Math.floor(Math.random() * bulletMisses.length)]);
             duckEvent = false;
+            gameEvent = false;
         } else {
             playFromStart(onHit[Math.floor(Math.random() * onHit.length)]);
             lives--;
             livesTracker.innerHTML = '❤️'.repeat(lives);
             duckEvent = false;
+            gameEvent = false;
         }
     }
 }
@@ -195,6 +198,8 @@ function resetGame() {
 
     duckProbability = 0.02;
     duckTime = 2000;
+
+    jumpProbability = 0.01;
 }
 
 
@@ -306,11 +311,15 @@ loadModel().then(function (model) {
                 leftTargetStatus = true;
             }
 
-            console.log(duckProbability);
-
             if ((Math.random() < duckProbability) && (duckEvent === false)) {
                 duckEvent = true;
+                gameEvent = true;
                 end_time = duckEventInitializer();
+            }
+
+            if ((Math.random() < jumpProbability) && (gameEvent === true)) {
+                jumpEvent = true;
+                gameEvent = true;
             }
         }
     }, 100)
