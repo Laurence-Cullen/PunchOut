@@ -21,7 +21,7 @@ from tqdm import tqdm
 def load_dataset(path):
     data = load_files(path)
     images = np.array(data['filenames'])
-    images_targets = np_utils.to_categorical(np.array(data['target']), 4)  # [1,0] is no_punch, [0,1] is right_punch
+    images_targets = np_utils.to_categorical(np.array(data['target']), 5)  # [1,0] is no_punch, [0,1] is right_punch
     return images, images_targets
 
 
@@ -81,7 +81,7 @@ def augmented_MobileNetV2_model():
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
     x = Dense(1024, activation='relu')(x)
-    predictions = Dense(4, activation='softmax')(x)
+    predictions = Dense(5, activation='softmax')(x)
 
     # this is the model we will train
     mobilenetV2_model = Model(inputs=base_model.input, outputs=predictions)
