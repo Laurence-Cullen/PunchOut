@@ -1,4 +1,4 @@
-import {getOnHitAssets, getBulletMissAssets, getDuckCommandAssets} from './assetLoader.js'
+import {getOnHitAssets, getBulletMissAssets, getDuckCommandAssets, getJumpCommandAssets} from './assetLoader.js'
 
 // defining dimensions of video to capture from web cam
 const width = 224;
@@ -35,13 +35,14 @@ const explosionSounds = new Audio('assets/explosion_1.wav');
 let onHit = getOnHitAssets();
 let bulletMisses = getBulletMissAssets();
 let duckCommands = getDuckCommandAssets();
+let jumpCommands = getJumpCommandAssets();
 
 let playerScore = 0;
 let punchCount = 0;
 let targetsDestroyed = 0;
 let duckProbability = 0.02;
 let duckTime = 2000;
-let jumpProbability = 0.01;
+let jumpProbability = 0.2;
 let jumpTime = 1500;
 let lives = 3;
 
@@ -163,7 +164,7 @@ function duckEventInitializer() {
     playFromStart(duckCommands[Math.floor(Math.random() * duckCommands.length)]);
     setTimeout(function duckCommandDelay() {
         gunshotSound.play();
-    }, 1000)
+    }, 1000);
     return start_time + duckTime + 20
 }
 
@@ -187,19 +188,16 @@ function duckCheck(posture) {
 
 
 function jumpCheck(posture) {
-    playFromStart(jumpCommands[Math.floor(Math.random() * jumpCommands.length)]);
     setTimeout(function jumpDelay() {
         if (posture === 'jump') {
             playFromStart(explosionSounds);
             gameEvent = false;
-            jumpEvent = false;
         }
-        else: {
+        else {
             playFromStart(explosionSounds);
-            playFromStart(screamSound);
+            playFromStart(onHit[Math.floor(Math.random() * onHit.length)]);
             lives --;
             gameEvent = false;
-            jumpEvent = false;
         }
 
         gameActive = true;
@@ -257,7 +255,7 @@ function gameEndCheck() {
         $('#finalScoreModal').modal('show');
         setTimeout(function gameOverVoiceover() {
             playFromStart(gameOver)
-        }, 750)
+        }, 750);
 
 
         resetGame()
@@ -313,6 +311,7 @@ loadModel().then(function (model) {
 
             if (jumpEvent) {
                 jumpCheck();
+                jumpEvent = false;
             }
         }
         posture = newPosture;
@@ -346,9 +345,10 @@ loadModel().then(function (model) {
                 end_time = duckEventInitializer();
             }
 
-            if ((Math.random() < jumpProbability) && (gameEvent === true)) {
+            if ((Math.random() < jumpProbability) && (gameEvent === false)) {
                 jumpEvent = true;
                 gameEvent = true;
+                playFromStart(jumpCommands[Math.floor(Math.random() * jumpCommands.length)]);
             }
         }
     }, 100)
