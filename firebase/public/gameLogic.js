@@ -1,3 +1,5 @@
+import {getOnHitAssets, getBulletMissAssets, getDuckCommandAssets} from './assetLoader.js'
+
 // defining dimensions of video to capture from web cam
 const width = 224;
 const height = 224;
@@ -17,6 +19,7 @@ let end_time = 0;
 // defines whether a game is active or not
 let gameActive = false;
 
+// Load audio assets
 const punchSound = new Audio('assets/punch.mp3');
 const countdownSound = new Audio('assets/mario_kart_race_start.mp3');
 // const fightSound = new Audio('assets/mortal_kombat_fight.mp3');
@@ -27,43 +30,9 @@ const shatterSound = new Audio('assets/target_shatter.mp3');
 const gunshotSound = new Audio('assets/gunshot.mp3');
 const gameOver = new Audio('assets/game_over_2.wav');
 
-let onHit = [
-    new Audio('assets/on_hit/1.mp3'),
-    new Audio('assets/on_hit/2.mp3'),
-    new Audio('assets/on_hit/3.mp3'),
-    new Audio('assets/on_hit/4.mp3'),
-    new Audio('assets/on_hit/5.mp3'),
-    new Audio('assets/on_hit/6.mp3'),
-    new Audio('assets/on_hit/7.mp3')
-];
-
-let bulletMisses = [
-    new Audio('assets/bullet_miss/1.wav'),
-    new Audio('assets/bullet_miss/2.wav'),
-    new Audio('assets/bullet_miss/3.wav'),
-    new Audio('assets/bullet_miss/4.wav'),
-    new Audio('assets/bullet_miss/5.wav'),
-    new Audio('assets/bullet_miss/6.wav'),
-    new Audio('assets/bullet_miss/7.wav'),
-    new Audio('assets/bullet_miss/8.wav'),
-    new Audio('assets/bullet_miss/9.wav')
-];
-
-let duckCommands = [
-    new Audio('assets/duck/1.wav'),
-    new Audio('assets/duck/2.wav'),
-    new Audio('assets/duck/3.wav'),
-    new Audio('assets/duck/4.wav'),
-    new Audio('assets/duck/5.wav'),
-    new Audio('assets/duck/6.wav'),
-    new Audio('assets/duck/7.wav'),
-    new Audio('assets/duck/8.wav'),
-    new Audio('assets/duck/9.wav'),
-    new Audio('assets/duck/10.wav'),
-    new Audio('assets/duck/11.wav'),
-    new Audio('assets/duck/12.wav')
-];
-
+let onHit = getOnHitAssets();
+let bulletMisses = getBulletMissAssets();
+let duckCommands = getDuckCommandAssets();
 
 let playerScore = 0;
 let punchCount = 0;
@@ -75,7 +44,6 @@ let lives = 3;
 // tracks how many game engine ticks a target has survived
 let rightTargetAge = 0;
 let leftTargetAge = 0;
-
 
 let gameCanvasLeft = document.getElementById('game_canvas_left');
 let gameContextLeft = gameCanvasLeft.getContext("2d");
