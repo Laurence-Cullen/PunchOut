@@ -14,7 +14,7 @@ let posture = null;
 const showTargetProbability = 0.05;
 const missedPunchPenalty = 30;
 
-// end_time of duck event, to be initialized with duckEventInitializer
+// end_time of duck_commands event, to be initialized with duckEventInitializer
 let end_time = 0;
 
 // defines whether a game is active or not
@@ -90,7 +90,7 @@ async function loadModel() {
     return model
 }
 
-const modelLabels = {0: 'duck', 1: 'jump', 2: 'left punch', 3: 'no punch', 4: 'right punch',};
+const modelLabels = {0: 'duck_commands', 1: 'jump', 2: 'left punch', 3: 'no punch', 4: 'right punch',};
 
 function timeToDuck() {
     return 2000 - Math.min(900, 50 * targetsDestroyed)
@@ -171,7 +171,7 @@ function duckEventInitializer() {
 function duckCheck(posture) {
     let date = new Date();
     if (date.getTime() > end_time) {
-        if (posture === 'duck') {
+        if (posture === 'duck_commands') {
             playFromStart(bulletMisses[Math.floor(Math.random() * bulletMisses.length)]);
             duckEvent = false;
             gameEvent = false;
