@@ -158,8 +158,10 @@ function newPunch(newPosture) {
 function duckEventInitializer() {
     let date = new Date();
     let start_time = date.getTime();
-    playFromStart(gunshotSound);
     playFromStart(duckCommands[Math.floor(Math.random() * duckCommands.length)]);
+    setTimeout(function duckCommandDelay(){
+        gunshotSound.play();
+    }, 1000)
     return start_time + duckTime + 20
 }
 
