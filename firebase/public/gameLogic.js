@@ -85,7 +85,7 @@ async function loadModel() {
     return model
 }
 
-const modelLabels = {0: 'duck', 1: 'left punch', 2: 'no punch', 3: 'right punch',};
+const modelLabels = {0: 'duck', 1: 'jump', 2: 'left punch', 3: 'no punch', 4: 'right punch',};
 
 function timeToDuck() {
     return 2000 - Math.min(1500, 50 * targetsDestroyed)
