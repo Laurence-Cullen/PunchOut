@@ -30,6 +30,7 @@ const welcomeSound = new Audio('assets/welcome.m4a');
 const shatterSound = new Audio('assets/target_shatter.mp3');
 const gunshotSound = new Audio('assets/gunshot.mp3');
 const gameOver = new Audio('assets/game_over_2.wav');
+const explosionSounds = new Audio('assets/explosion_1.wav');
 
 let onHit = getOnHitAssets();
 let bulletMisses = getBulletMissAssets();
@@ -41,6 +42,7 @@ let targetsDestroyed = 0;
 let duckProbability = 0.02;
 let duckTime = 2000;
 let jumpProbability = 0.01;
+let jumpTime = 1500;
 let lives = 3;
 
 // tracks how many game engine ticks a target has survived
@@ -76,7 +78,7 @@ livesTracker.innerHTML = '❤️'.repeat(lives);
 
 gameStartButton.onclick = function () {
     playFromStart(countdownSound);
-    setTimeout(function gameStart(){
+    setTimeout(function gameStart() {
         gameActive = true;
     }, 4500)
 };
@@ -159,7 +161,7 @@ function duckEventInitializer() {
     let date = new Date();
     let start_time = date.getTime();
     playFromStart(duckCommands[Math.floor(Math.random() * duckCommands.length)]);
-    setTimeout(function duckCommandDelay(){
+    setTimeout(function duckCommandDelay() {
         gunshotSound.play();
     }, 1000)
     return start_time + duckTime + 20
@@ -181,6 +183,27 @@ function duckCheck(posture) {
             gameEvent = false;
         }
     }
+}
+
+
+function jumpCheck(posture) {
+    playFromStart(jumpCommands[Math.floor(Math.random() * jumpCommands.length)]);
+    setTimeout(function jumpDelay() {
+        if (posture === 'jump') {
+            playFromStart(explosionSounds);
+            gameEvent = false;
+            jumpEvent = false;
+        }
+        else: {
+            playFromStart(explosionSounds);
+            playFromStart(screamSound);
+            lives --;
+            gameEvent = false;
+            jumpEvent = false;
+        }
+
+        gameActive = true;
+    }, jumpTime)
 }
 
 
@@ -232,9 +255,9 @@ function gameEndCheck() {
     if (lives === 0) {
         modalBody.innerText = 'Your final score was: ' + playerScore.toString();
         $('#finalScoreModal').modal('show');
-        setTimeout(function gameOverVoiceover(){
-        playFromStart(gameOver)
-    }, 750)
+        setTimeout(function gameOverVoiceover() {
+            playFromStart(gameOver)
+        }, 750)
 
 
         resetGame()
@@ -286,6 +309,10 @@ loadModel().then(function (model) {
 
             if (duckEvent) {
                 duckCheck(posture, end_time);
+            }
+
+            if (jumpEvent) {
+                jumpCheck();
             }
         }
         posture = newPosture;
