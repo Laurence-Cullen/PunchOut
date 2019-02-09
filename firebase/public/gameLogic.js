@@ -39,7 +39,7 @@ let playerScore = 0;
 let punchCount = 0;
 let targetsDestroyed = 0;
 let duckProbability = 0.02;
-let duckTime = 2;
+let duckTime = 2000;
 let lives = 3;
 
 // tracks how many game engine ticks a target has survived
@@ -192,7 +192,7 @@ function resetGame() {
     targetsDestroyed = 0;
 
     duckProbability = 0.02;
-    duckTime = 2;
+    duckTime = 2000;
 }
 
 
@@ -223,7 +223,10 @@ function gameEndCheck() {
     if (lives === 0) {
         modalBody.innerText = 'Your final score was: ' + playerScore.toString();
         $('#finalScoreModal').modal('show');
-        playFromStart(gameOver);
+        setTimeout(function gameOverVoiceover(){
+        playFromStart(gameOver)
+    }, 750)
+
 
         resetGame()
     }
@@ -261,18 +264,21 @@ loadModel().then(function (model) {
         const newPosture = inferPosture(imageData);
         // console.timeEnd('inferPosture');
 
-        if ((newPosture === posture) && (newPosture === 'right punch')) {
+        if (gameActive) {
 
-        } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
-            newPunch(newPosture)
-        } else if ((newPosture !== posture) && (newPosture === 'left punch')) {
-            newPunch(newPosture)
+            if ((newPosture === posture) && (newPosture === 'right punch')) {
+
+            } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
+                newPunch(newPosture)
+            } else if ((newPosture !== posture) && (newPosture === 'left punch')) {
+                newPunch(newPosture)
+            }
+
+
+            if (duckStatus) {
+                duckCheck(posture, end_time);
+            }
         }
-
-        if (duckStatus) {
-            duckCheck(posture, end_time);
-        }
-
         posture = newPosture;
 
         if (rightTargetStatus) {

@@ -12,7 +12,7 @@ base_model.summary()
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
 x = Dense(1024, activation='relu')(x)
-predictions = Dense(4, activation='softmax')(x)
+predictions = Dense(5, activation='softmax')(x)
 
 # this is the model we will train
 mobilenetV2_model = Model(inputs=base_model.input, outputs=predictions)

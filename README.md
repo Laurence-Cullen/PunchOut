@@ -7,3 +7,7 @@ Currently focused on punching targets as they popup, more actions and complexity
 To play the game visit: [punchout-34c05.firebaseapp.com](https://punchout-34c05.firebaseapp.com/)
 
 Modelling credit for dataset goes to Maddi, Mark and Nancy Cullen.
+
+## TODO
+* Add video tint when hit
+* Add event requiring jump
