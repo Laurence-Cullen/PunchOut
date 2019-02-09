@@ -1,4 +1,4 @@
-import {getOnHitAssets, getBulletMissAssets, getDuckCommandAssets} from './assetLoader.js'
+import {getOnBulletHitAssets, getBulletMissAssets, getDuckCommandAssets} from './assetLoader.js'
 
 // defining dimensions of video to capture from web cam
 const width = 224;
@@ -32,8 +32,8 @@ const gunshotSound = new Audio('assets/gunshot.mp3');
 const gameOver = new Audio('assets/game_over_2.wav');
 const explosionSounds = new Audio('assets/explosion_1.wav');
 
-let onHit = getOnHitAssets();
-let bulletMisses = getBulletMissAssets();
+let onBulletHit = getOnBulletHitAssets();
+let onBulletMiss = getBulletMissAssets();
 let duckCommands = getDuckCommandAssets();
 
 let playerScore = 0;
@@ -172,11 +172,11 @@ function duckCheck(posture) {
     let date = new Date();
     if (date.getTime() > end_time) {
         if (posture === 'duck_commands') {
-            playFromStart(bulletMisses[Math.floor(Math.random() * bulletMisses.length)]);
+            playFromStart(onBulletMiss[Math.floor(Math.random() * onBulletMiss.length)]);
             duckEvent = false;
             gameEvent = false;
         } else {
-            playFromStart(onHit[Math.floor(Math.random() * onHit.length)]);
+            playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
             lives--;
             livesTracker.innerHTML = '❤️'.repeat(lives);
             duckEvent = false;

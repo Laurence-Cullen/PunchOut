@@ -1,4 +1,4 @@
-export function getOnHitAssets() {
+export function getOnBulletHitAssets() {
     return [
         new Audio('assets/on_bullet_hit/1.mp3'),
         new Audio('assets/on_bullet_hit/2.mp3'),
@@ -38,4 +38,8 @@ export function getDuckCommandAssets() {
         new Audio('assets/duck_commands/11.wav'),
         new Audio('assets/duck_commands/12.wav')
     ]
+}
+
+export function get() {
+    
 }
