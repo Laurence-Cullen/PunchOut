@@ -39,7 +39,7 @@ let playerScore = 0;
 let punchCount = 0;
 let targetsDestroyed = 0;
 let duckProbability = 0.02;
-let duckTime = 2;
+let duckTime = 2000;
 let lives = 3;
 
 // tracks how many game engine ticks a target has survived
@@ -192,7 +192,7 @@ function resetGame() {
     targetsDestroyed = 0;
 
     duckProbability = 0.02;
-    duckTime = 2;
+    duckTime = 2000;
 }
 
 
