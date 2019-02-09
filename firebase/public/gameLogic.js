@@ -8,9 +8,6 @@ const modelEvaluationPeriod = 50;
 // initialise posture
 let posture = null;
 
-// how long a single game session is in terms of destroyed targets
-const gameLength = 10;
-
 // the probability per game engine tick that a target will appear
 const showTargetProbability = 0.05;
 
@@ -20,13 +17,13 @@ let end_time = 0;
 // defines whether a game is active or not
 let gameActive = false;
 
-const punchSound = new Audio('assets/PUNCH.mp3');
+const punchSound = new Audio('assets/punch.mp3');
 const countdownSound = new Audio('assets/mario_kart_race_start.mp3');
-const fightSound = new Audio('assets/mortal_kombat_fight.mp3');
+// const fightSound = new Audio('assets/mortal_kombat_fight.mp3');
 const leftPunchSound = new Audio('assets/left_punch.m4a');
 const rightPunchSound = new Audio('assets/right_punch.m4a');
 const welcomeSound = new Audio('assets/welcome.m4a');
-const shatterSound = new Audio('assets/shatter.mp3');
+const shatterSound = new Audio('assets/target_shatter.mp3');
 const gunshotSound = new Audio('assets/gunshot.mp3');
 const gameOver = new Audio('assets/game_over_2.wav');
 
@@ -41,15 +38,15 @@ let onHit = [
 ];
 
 let bulletMisses = [
-    new Audio('assets/bullet_miss_1.wav'),
-    new Audio('assets/bullet_miss_2.wav'),
-    new Audio('assets/bullet_miss_3.wav'),
-    new Audio('assets/bullet_miss_4.wav'),
-    new Audio('assets/bullet_miss_5.wav'),
-    new Audio('assets/bullet_miss_6.wav'),
-    new Audio('assets/bullet_miss_7.wav'),
-    new Audio('assets/bullet_miss_8.wav'),
-    new Audio('assets/bullet_miss_9.wav')
+    new Audio('assets/bullet_miss/1.wav'),
+    new Audio('assets/bullet_miss/2.wav'),
+    new Audio('assets/bullet_miss/3.wav'),
+    new Audio('assets/bullet_miss/4.wav'),
+    new Audio('assets/bullet_miss/5.wav'),
+    new Audio('assets/bullet_miss/6.wav'),
+    new Audio('assets/bullet_miss/7.wav'),
+    new Audio('assets/bullet_miss/8.wav'),
+    new Audio('assets/bullet_miss/9.wav')
 ];
 
 let duckCommands = [
@@ -104,6 +101,7 @@ let resetButton = document.getElementById('reset');
 let gameStartButton = document.getElementById('game_start');
 let livesTracker = document.getElementById("lives");
 livesTracker.innerHTML = lives;
+
 gameStartButton.onclick = function () {
     playFromStart(countdownSound);
     gameActive = true
@@ -182,6 +180,7 @@ function newPunch(newPosture) {
     punchCount++;
 }
 
+
 function duckEventInitializer() {
     let date = new Date();
     let start_time = date.getTime();
@@ -189,6 +188,7 @@ function duckEventInitializer() {
     playFromStart(duckCommands[Math.floor(Math.random() * duckCommands.length)]);
     return start_time + duckTime + 20
 }
+
 
 function duckCheck(posture) {
     let date = new Date();
@@ -203,11 +203,10 @@ function duckCheck(posture) {
             duckStatus = false;
         }
     }
-
-
 }
 
-function reset() {
+
+function resetGame() {
     gameActive = false;
 
     playerScore = 0;
@@ -225,7 +224,7 @@ function reset() {
     duckTime = 2;
 }
 
-resetButton.onclick = reset;
+resetButton.onclick = resetGame;
 
 function drawTarget(targetStatus, context, targetPrompt) {
     if (targetStatus) {
@@ -253,13 +252,12 @@ function gameEndCheck() {
         $('#finalScoreModal').modal('show');
         playFromStart(gameOver);
 
-        reset()
+        resetGame()
     }
 }
 
 
 loadModel().then(function (model) {
-
 
     let canvas, context, video;
 
@@ -273,7 +271,7 @@ loadModel().then(function (model) {
     context = canvas.getContext("2d");
 
     function inferPosture(imageData) {
-        const tensor = tf.fromPixels(imageData).reshape([1, 224, 224, 3]);
+        const tensor = tf.fromPixels(imageData).reshape([1, width, height, 3]);
         const normalisedTensor = tensor.div(tf.tensor([255.0]));
         const predictions = model.predict(normalisedTensor);
         const labelValue = predictions.argMax(1).asScalar().get();
@@ -326,14 +324,12 @@ loadModel().then(function (model) {
                 leftTargetStatus = true;
             }
 
-            console.log(duckStatusProbability)
+            console.log(duckStatusProbability);
 
             if ((Math.random() < duckStatusProbability) && (duckStatus === false)) {
                 duckStatus = true;
                 end_time = duckEventInitializer();
             }
-
         }
-
     }, 100)
-})
+});
