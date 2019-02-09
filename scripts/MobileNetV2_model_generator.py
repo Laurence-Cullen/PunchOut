@@ -28,7 +28,7 @@ def load_dataset(path):
 # load training dataset
 train_images, train_targets = load_dataset('../Images/train')
 test_images, test_targets = load_dataset('../Images/test')
-
+train_images.head()
 print('There are %s total training images.\n' % len(train_images))
 print('There are %s total testing images.\n' % len(test_images))
 
