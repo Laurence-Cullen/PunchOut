@@ -12,6 +12,7 @@ let posture = null;
 
 // the probability per game engine tick that a target will appear
 const showTargetProbability = 0.05;
+const missedPunchPenalty = 30;
 
 // end_time of duck event, to be initialized with duckEventInitializer
 let end_time = 0;
@@ -37,7 +38,7 @@ let duckCommands = getDuckCommandAssets();
 let playerScore = 0;
 let punchCount = 0;
 let targetsDestroyed = 0;
-let duckStatusProbability = 0.02;
+let duckProbability = 0.02;
 let duckTime = 2;
 let lives = 3;
 
@@ -88,7 +89,7 @@ function timeToDuck() {
     return 2000 - Math.min(1500, 50 * targetsDestroyed)
 }
 
-function duckProbability() {
+function computeDuckProbability() {
     return Math.min(0.1, 0.02 + 0.0025 * targetsDestroyed)
 }
 
@@ -123,11 +124,11 @@ function newPunch(newPosture) {
             playerScore += Math.max(0, 40 - leftTargetAge);
             targetsDestroyed++;
             duckTime = timeToDuck();
-            duckStatusProbability = duckProbability();
+            duckProbability = computeDuckProbability();
             leftTargetAge = 0;
             leftTargetStatus = false;
         } else if (gameActive) {
-            playerScore -= 10
+            playerScore -= missedPunchPenalty
         }
 
     } else if (newPosture === 'right punch') {
@@ -138,11 +139,11 @@ function newPunch(newPosture) {
             playerScore += Math.max(0, 40 - rightTargetAge);
             targetsDestroyed++;
             duckTime = timeToDuck();
-            duckStatusProbability = duckProbability();
+            duckProbability = computeDuckProbability();
             rightTargetAge = 0;
             rightTargetStatus = false;
         } else if (gameActive) {
-            playerScore -= 10
+            playerScore -= missedPunchPenalty
         }
     }
     punchCount++;
@@ -188,9 +189,10 @@ function resetGame() {
 
     targetsDestroyed = 0;
 
-    duckStatusProbability = 0.02;
+    duckProbability = 0.02;
     duckTime = 2;
 }
+
 
 resetButton.onclick = resetGame;
 
@@ -211,6 +213,7 @@ function drawTarget(targetStatus, context, targetPrompt) {
         targetPrompt.innerText = '';
     }
 }
+
 
 draw();
 
@@ -283,6 +286,7 @@ loadModel().then(function (model) {
 
     }, modelEvaluationPeriod);
 
+
     setInterval(function () {
         if (gameActive) {
             if (Math.random() < showTargetProbability) {
@@ -292,9 +296,9 @@ loadModel().then(function (model) {
                 leftTargetStatus = true;
             }
 
-            console.log(duckStatusProbability);
+            console.log(duckProbability);
 
-            if ((Math.random() < duckStatusProbability) && (duckStatus === false)) {
+            if ((Math.random() < duckProbability) && (duckStatus === false)) {
                 duckStatus = true;
                 end_time = duckEventInitializer();
             }
