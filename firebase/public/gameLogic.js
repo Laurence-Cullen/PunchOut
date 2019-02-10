@@ -191,17 +191,19 @@ function jumpCheck(posture) {
     setTimeout(function jumpDelay() {
         if (posture === 'jump') {
             playFromStart(explosionSounds);
-            gameEvent = false;
         }
+
         else {
             playFromStart(explosionSounds);
             playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
             lives --;
             livesTracker.innerHTML = '❤️'.repeat(lives);
-            gameEvent = false;
         }
 
-        gameActive = true;
+        setTimeout(function eventOutroDelay() {
+            gameEvent = false;
+        }, 500);
+
     }, jumpTime)
 }
 
@@ -312,7 +314,7 @@ loadModel().then(function (model) {
             }
 
             if (jumpEvent) {
-                jumpCheck();
+                jumpCheck(posture);
                 jumpEvent = false;
             }
         }

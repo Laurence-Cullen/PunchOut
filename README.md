@@ -16,3 +16,6 @@ Modelling credit for dataset goes to Maddi, Mark and Nancy Cullen.
 * Integrate on explosion hit sound effects
 * Add setup instructions (audio/visual/both)
 * 
+
+## DESIGN
+* Webcam window to be much bigger
