@@ -211,6 +211,7 @@ function resetGame() {
     playerScore = 0;
     punchCount = 0;
     lives = 3;
+    livesTracker.innerHTML = '❤️'.repeat(lives);
 
     rightTargetStatus = false;
     rightTargetAge = 0;
