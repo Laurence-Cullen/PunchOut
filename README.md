@@ -10,7 +10,6 @@ Modelling credit for dataset goes to Maddi, Mark and Nancy Cullen.
 
 ## TODO
 * Add video tint when hit
-* Stop concurrent duck and jump events
 * Rebalance audio
 * Stop punches when hit for ~0.5 seconds
 * Redesign UI
