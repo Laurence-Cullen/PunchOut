@@ -340,7 +340,7 @@ loadModel().then(function (model) {
                 leftTargetStatus = true;
             }
 
-            if ((Math.random() < duckProbability) && (duckEvent === false)) {
+            if ((Math.random() < duckProbability) && (duckEvent === false) && (gameEvent === false)) {
                 duckEvent = true;
                 gameEvent = true;
                 end_time = duckEventInitializer();
