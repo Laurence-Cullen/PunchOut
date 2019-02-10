@@ -68,6 +68,7 @@ let leftTargetStatus = false;
 let gameEvent = false;
 let duckEvent = false;
 let jumpEvent = false;
+let shellShock = false;
 
 let playerScoreElement = document.getElementById('player_score');
 let targetsDestroyedElement = document.getElementById('targets_destroyed');
@@ -179,9 +180,14 @@ function duckCheck(posture) {
         } else {
             playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
             lives--;
+            shellShock = true;
             livesTracker.innerHTML = '❤️'.repeat(lives);
             duckEvent = false;
             gameEvent = false;
+
+            setTimeout(function shellShockDelay() {
+                shellShock=false;
+            }, 750);
         }
     }
 }
@@ -191,13 +197,16 @@ function jumpCheck(posture) {
     setTimeout(function jumpDelay() {
         if (posture === 'jump') {
             playFromStart(explosionSounds);
-        }
-
-        else {
+        } else {
             playFromStart(explosionSounds);
             playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
-            lives --;
+            lives--;
+            shellShock=true;
             livesTracker.innerHTML = '❤️'.repeat(lives);
+
+            setTimeout(function shellShockDelay() {
+                shellShock=false;
+            }, 750);
         }
 
         setTimeout(function eventOutroDelay() {
@@ -302,9 +311,9 @@ loadModel().then(function (model) {
 
             if ((newPosture === posture) && (newPosture === 'right punch')) {
 
-            } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
+            } else if ((newPosture !== posture) && (newPosture === 'right punch') && (shellShock === false)) {
                 newPunch(newPosture)
-            } else if ((newPosture !== posture) && (newPosture === 'left punch')) {
+            } else if ((newPosture !== posture) && (newPosture === 'left punch') && (shellShock === false)) {
                 newPunch(newPosture)
             }
 
