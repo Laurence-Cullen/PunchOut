@@ -197,6 +197,7 @@ function jumpCheck(posture) {
             playFromStart(explosionSounds);
             playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
             lives --;
+            livesTracker.innerHTML = '❤️'.repeat(lives);
             gameEvent = false;
         }
 
