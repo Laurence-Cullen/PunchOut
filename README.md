@@ -12,7 +12,6 @@ Modelling credit for dataset goes to Maddi, Mark and Nancy Cullen.
 * Add video tint when hit
 * Rebalance audio
 * Redesign UI
-* Integrate on explosion hit sound effects
 * Add setup instructions (audio/visual/both)
 * 
 

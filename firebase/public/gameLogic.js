@@ -1,4 +1,4 @@
-import {getOnBulletHitAssets, getBulletMissAssets, getDuckCommandAssets, getJumpCommandAssets} from './assetLoader.js'
+import {getOnBulletHitAssets, getBulletMissAssets, getDuckCommandAssets, getJumpCommandAssets, getOnExplosionHitAssets} from './assetLoader.js'
 
 // defining dimensions of video to capture from web cam
 const width = 224;
@@ -36,6 +36,7 @@ let onBulletHit = getOnBulletHitAssets();
 let onBulletMiss = getBulletMissAssets();
 let duckCommands = getDuckCommandAssets();
 let jumpCommands = getJumpCommandAssets();
+let onExplosionHit = getOnExplosionHitAssets();
 
 let playerScore = 0;
 let punchCount = 0;
@@ -199,7 +200,7 @@ function jumpCheck(posture) {
             playFromStart(explosionSounds);
         } else {
             playFromStart(explosionSounds);
-            playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
+            playFromStart(onExplosionHit[Math.floor(Math.random() * onExplosionHit.length)]);
             lives--;
             shellShock=true;
             livesTracker.innerHTML = '❤️'.repeat(lives);
