@@ -22,17 +22,17 @@ let gameActive = false;
 
 // Load audio assets
 const punchSound = new Audio('assets/punch.mp3');
-punchSound.volume = 0.6;
+punchSound.volume = 0.5;
 const countdownSound = new Audio('assets/mario_kart_race_start.mp3');
-countdownSound.volume = 0.7;
+countdownSound.volume = 0.6;
 // const fightSound = new Audio('assets/mortal_kombat_fight.mp3');
 const leftPunchSound = new Audio('assets/left_punch.m4a');
-leftPunchSound.volume = 0.6;
+leftPunchSound.volume = 0.5;
 const rightPunchSound = new Audio('assets/right_punch.m4a');
-rightPunchSound.volume = 0.6;
+rightPunchSound.volume = 0.5;
 const welcomeSound = new Audio('assets/welcome.m4a');
 const shatterSound = new Audio('assets/target_shatter.mp3');
-shatterSound.volume = 0.6;
+shatterSound.volume = 0.5;
 const gunshotSound = new Audio('assets/gunshot.mp3');
 const gameOver = new Audio('assets/game_over_2.wav');
 const explosionSounds = new Audio('assets/explosion_1.wav');
