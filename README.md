@@ -16,4 +16,3 @@ Modelling credit for dataset goes to Maddi, Mark and Nancy Cullen.
 * Redesign UI
 * Integrate on explosion hit sound effects
 * Add setup instructions (audio/visual/both)
-* 
