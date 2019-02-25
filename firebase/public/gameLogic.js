@@ -1,4 +1,4 @@
-import {getOnBulletHitAssets, getBulletMissAssets, getDuckCommandAssets, getJumpCommandAssets} from './assetLoader.js'
+import {getOnBulletHitAssets, getBulletMissAssets, getDuckCommandAssets, getJumpCommandAssets, getOnExplosionHitAssets} from './assetLoader.js'
 
 // defining dimensions of video to capture from web cam
 const width = 224;
@@ -22,12 +22,17 @@ let gameActive = false;
 
 // Load audio assets
 const punchSound = new Audio('assets/punch.mp3');
+punchSound.volume = 0.5;
 const countdownSound = new Audio('assets/mario_kart_race_start.mp3');
+countdownSound.volume = 0.6;
 // const fightSound = new Audio('assets/mortal_kombat_fight.mp3');
 const leftPunchSound = new Audio('assets/left_punch.m4a');
+leftPunchSound.volume = 0.5;
 const rightPunchSound = new Audio('assets/right_punch.m4a');
+rightPunchSound.volume = 0.5;
 const welcomeSound = new Audio('assets/welcome.m4a');
 const shatterSound = new Audio('assets/target_shatter.mp3');
+shatterSound.volume = 0.5;
 const gunshotSound = new Audio('assets/gunshot.mp3');
 const gameOver = new Audio('assets/game_over_2.wav');
 const explosionSounds = new Audio('assets/explosion_1.wav');
@@ -36,13 +41,14 @@ let onBulletHit = getOnBulletHitAssets();
 let onBulletMiss = getBulletMissAssets();
 let duckCommands = getDuckCommandAssets();
 let jumpCommands = getJumpCommandAssets();
+let onExplosionHit = getOnExplosionHitAssets();
 
 let playerScore = 0;
 let punchCount = 0;
 let targetsDestroyed = 0;
 let duckProbability = 0.02;
 let duckTime = 2000;
-let jumpProbability = 0.2;
+let jumpProbability = 0.05;
 let jumpTime = 1500;
 let lives = 3;
 
@@ -68,6 +74,7 @@ let leftTargetStatus = false;
 let gameEvent = false;
 let duckEvent = false;
 let jumpEvent = false;
+let shellShock = false;
 
 let playerScoreElement = document.getElementById('player_score');
 let targetsDestroyedElement = document.getElementById('targets_destroyed');
@@ -179,9 +186,14 @@ function duckCheck(posture) {
         } else {
             playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
             lives--;
+            shellShock = true;
             livesTracker.innerHTML = '❤️'.repeat(lives);
             duckEvent = false;
             gameEvent = false;
+
+            setTimeout(function shellShockDelay() {
+                shellShock=false;
+            }, 750);
         }
     }
 }
@@ -191,16 +203,22 @@ function jumpCheck(posture) {
     setTimeout(function jumpDelay() {
         if (posture === 'jump') {
             playFromStart(explosionSounds);
-            gameEvent = false;
-        }
-        else {
+        } else {
             playFromStart(explosionSounds);
-            playFromStart(onBulletHit[Math.floor(Math.random() * onBulletHit.length)]);
-            lives --;
-            gameEvent = false;
+            playFromStart(onExplosionHit[Math.floor(Math.random() * onExplosionHit.length)]);
+            lives--;
+            shellShock=true;
+            livesTracker.innerHTML = '❤️'.repeat(lives);
+
+            setTimeout(function shellShockDelay() {
+                shellShock=false;
+            }, 750);
         }
 
-        gameActive = true;
+        setTimeout(function eventOutroDelay() {
+            gameEvent = false;
+        }, 500);
+
     }, jumpTime)
 }
 
@@ -299,9 +317,9 @@ loadModel().then(function (model) {
 
             if ((newPosture === posture) && (newPosture === 'right punch')) {
 
-            } else if ((newPosture !== posture) && (newPosture === 'right punch')) {
+            } else if ((newPosture !== posture) && (newPosture === 'right punch') && (shellShock === false)) {
                 newPunch(newPosture)
-            } else if ((newPosture !== posture) && (newPosture === 'left punch')) {
+            } else if ((newPosture !== posture) && (newPosture === 'left punch') && (shellShock === false)) {
                 newPunch(newPosture)
             }
 
@@ -311,7 +329,7 @@ loadModel().then(function (model) {
             }
 
             if (jumpEvent) {
-                jumpCheck();
+                jumpCheck(posture);
                 jumpEvent = false;
             }
         }
@@ -340,7 +358,7 @@ loadModel().then(function (model) {
                 leftTargetStatus = true;
             }
 
-            if ((Math.random() < duckProbability) && (duckEvent === false)) {
+            if ((Math.random() < duckProbability) && (duckEvent === false) && (gameEvent === false)) {
                 duckEvent = true;
                 gameEvent = true;
                 end_time = duckEventInitializer();

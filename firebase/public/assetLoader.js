@@ -48,3 +48,14 @@ export function getJumpCommandAssets() {
         new Audio('assets/jump_commands/4.mp3'),
     ]
 }
+
+export function getOnExplosionHitAssets() {
+    return [
+        new Audio('assets/on_explosion_hit/1.mp3'),
+        new Audio('assets/on_explosion_hit/2.mp3'),
+        new Audio('assets/on_explosion_hit/3.mp3'),
+        new Audio('assets/on_explosion_hit/4.mp3'),
+        new Audio('assets/on_explosion_hit/5.mp3'),
+        new Audio('assets/on_explosion_hit/6.mp3'),
+    ]
+}

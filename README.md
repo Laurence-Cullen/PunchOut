@@ -10,9 +10,9 @@ Modelling credit for dataset goes to Maddi, Mark and Nancy Cullen.
 
 ## TODO
 * Add video tint when hit
-* Stop concurrent duck and jump events
 * Rebalance audio
-* Stop punches when hit for ~0.5 seconds
 * Redesign UI
-* Integrate on explosion hit sound effects
-* Add setup instructions (audio/visual/both)
+* Add setup instructions (audio/visual/both) 
+
+## DESIGN
+* Webcam window to be much bigger
