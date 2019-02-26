@@ -364,10 +364,10 @@ loadModel().then(function (model) {
                 end_time = duckEventInitializer();
             }
 
-             /*if ((Math.random() < jumpProbability) && (gameEvent === false)) {
+             if ((Math.random() > 1 /* jumpProbability */) && (gameEvent === false)) {
                 jumpEvent = true;
                 gameEvent = true;
-                playFromStart(jumpCommands[Math.floor(Math.random() * jumpCommands.length)]); */
+                playFromStart(jumpCommands[Math.floor(Math.random() * jumpCommands.length)]);
             }
         }
     }, 100)
