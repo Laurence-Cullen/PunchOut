@@ -12,8 +12,7 @@ Modelling credit for dataset goes to Maddi, Mark and Nancy Cullen.
 * Add video tint when hit
 * Rebalance audio
 * Redesign UI
-* Add setup instructions (audio/visual/both)
-* 
+* Add setup instructions (audio/visual/both) 
 
 ## DESIGN
 * Webcam window to be much bigger
