@@ -48,7 +48,7 @@ let punchCount = 0;
 let targetsDestroyed = 0;
 let duckProbability = 0.02;
 let duckTime = 2000;
-let jumpProbability = 0.05;
+let jumpProbability = 0.00;
 let jumpTime = 1500;
 let lives = 3;
 
