@@ -48,7 +48,7 @@ let punchCount = 0;
 let targetsDestroyed = 0;
 let duckProbability = 0.02;
 let duckTime = 2000;
-let jumpProbability = 0;
+let jumpProbability = 0.001;
 let jumpTime = 1500;
 let lives = 3;
 
@@ -364,7 +364,7 @@ loadModel().then(function (model) {
                 end_time = duckEventInitializer();
             }
 
-             if ((Math.random() > 1 /* jumpProbability */) && (gameEvent === false)) {
+             if ((Math.random() < jumpProbability) && (gameEvent === false)) {
                 jumpEvent = true;
                 gameEvent = true;
                 playFromStart(jumpCommands[Math.floor(Math.random() * jumpCommands.length)]);
