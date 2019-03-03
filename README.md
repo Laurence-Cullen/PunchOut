@@ -10,7 +10,6 @@ Modelling credit for dataset goes to Maddi, Mark and Nancy Cullen.
 
 ## TODO
 * Add video tint when hit
-* Rebalance audio
 * Redesign UI
 * Add setup instructions (audio/visual/both) 
 
